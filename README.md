@@ -1,6 +1,6 @@
 # Ricardo Gutierrez Quezada
 
-**Network Engineer finding very interesting the network automation
+Network Engineer finding very interesting the network automation
 
 ## 👨‍💻 About me
 
