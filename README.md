@@ -1,6 +1,6 @@
 # Ricardo Gutierrez Quezada
 
-**Network Engineer finding very interesting the Front End/Backend Web development**
+**Network Engineer finding very interesting the network automation
 
 ## 👨‍💻 About me
 
