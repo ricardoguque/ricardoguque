@@ -1,6 +1,8 @@
 ---
 title: ARP
 description: Address Resolution protocol
+sidebar:
+  label: ARPe
 ---
 
 ## What is ARP

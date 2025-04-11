@@ -19,9 +19,18 @@ export default defineConfig({
       sidebar: [
         { label: 'Overview', link: '/overview', badge: { text: "WIP", variant: "caution"} },
         {
-          label: 'Network fundamentals',
+          label: 'Study Notes',
           collapsed: false,
-          autogenerate: { directory: 'network_fundamentals' }
+          items: [
+            'notes/overview',
+            { 
+              label: 'Network Fundamentals', 
+              items: [
+                'notes/nf/arp',
+                'notes/nf/dhcp',
+              ]
+            },
+          ],
         }
       ],
     })]

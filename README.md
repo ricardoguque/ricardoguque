@@ -52,4 +52,5 @@ Development of microwave path studies to Mexican mobile operators (Alestra and T
 ## 📞 Contact
 
 - Email: ricardoguque@gmail.com
+- Site: https://ricardoguque.github.io/ricardoguque/
 - LinkedIn: [Ricardo Gutierrez Quezada](https://www.linkedin.com/in/ricardo-gutierrez-b3446475/)
