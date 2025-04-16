@@ -41,6 +41,11 @@ IPv6 Neighbor discovery
 - network advertisements (ARP reply)
 - Router Solicitation, to find if therte is routers in the network
 - Router announcement to give some information about the router
+
 IPv6 Toolset
 
 Is IPV6 ND part of ICMP?
+
+IPv6 ND son IP packets y si hay L3 rules se pueden blockear a diferencia de ARP en IPV4. Asi que podemos habilitar lo que se usa para ND asi de esa manera funciona y para ping y traceroute usamos los puertos especificos que queremos blockear
+
+En Ipv6 no se permite fragmentacion, asi que se necesita aceotar los paquetes de packet too big para que la palicacion ajuste. O la aplicacion empezar con un packete mas bajo hasta encontrar

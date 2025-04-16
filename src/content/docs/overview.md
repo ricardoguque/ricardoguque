@@ -25,3 +25,5 @@ Topics
 
 
 Las notas no van a estar cubriendo todo. Solo lo que yo considero es mas comun o he visto en mi carrera o estudio
+
+En todas las capturas de paquete hay que tratar de entender lo mas que se pueda de los campos
