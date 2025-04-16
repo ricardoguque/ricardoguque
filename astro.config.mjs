@@ -10,9 +10,13 @@ export default defineConfig({
   integrations: [
     starlight({
       plugins: [starlightThemeRapide()],
-      title: 'Home',
-      logo: { src: '/src/assets/yo.jpg' },
+      title: 'Profile',
+      logo: { src: './src/assets/yo.jpg' },
       lastUpdated: true,
+      credits: true,
+      editLink: {
+        baseUrl: 'https://github.com/ricardoguque/ricardoguque/tree/main/',
+      },
       social: [
         { icon: 'github', label: 'GitHub', href: 'https://github.com/ricardoguque' },
         { icon: 'linkedin', label: 'LinkedIn', href: 'https://www.linkedin.com/in/ricardo-gutierrez-b3446475' },
@@ -23,12 +27,15 @@ export default defineConfig({
           label: 'Study Notes',
           collapsed: false,
           items: [
-            'notes/overview',
+            { label: "Overview", link: 'notes/overview', badge: { text: "WIP", variant: "caution"}},
             { 
               label: 'Network Fundamentals', 
               items: [
-                'notes/nf/arp',
-                'notes/nf/dhcp',
+                "notes/nf/arp",
+                "notes/nf/dhcp",
+                "notes/nf/icmp",
+                "notes/nf/nat",
+                "notes/nf/tcp",
               ]
             },
           ],
