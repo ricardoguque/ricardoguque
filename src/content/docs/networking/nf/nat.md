@@ -15,4 +15,6 @@ description: NAT
 - What is CG-NAT?
 - NAT table
 - NAT on IPv6?
+  - NAT64
+
 - FTP affected by NAT, test and show 

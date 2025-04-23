@@ -1,5 +1,5 @@
 ---
-title: Overview
+title: Home
 ---
 
 ## Goal
@@ -31,3 +31,6 @@ En todas las capturas de paquete hay que tratar de entender lo mas que se pueda 
 Investigar cuales son los ataques comunes que se pueden hacer a la red, para comprometer routers, BW, ruteo 
 
 Que onda con los tuples, hay algo que se pueda mostrar?, como se guarda en la CAM, TCAM, o como se usa para el load balancing
+
+
+path mtu discovery

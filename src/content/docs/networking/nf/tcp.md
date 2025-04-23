@@ -56,3 +56,11 @@ Retransmission:
 a lab where we define a different MSS and we can see the transmission of a file takes more packets on network
 
 Do a example grecefull from 3-WHS to FIN
+
+cuales son los rangos de los ephimeral ports?. Cuales son los well known ports?
+
+what is a socket?: a socket is a combination of IP address and port number. It is used to identify a specific process on a host. A socket is created by the application layer and is used by the transport layer to send and receive data. The socket is bound to a specific port number, which is used to identify the application that is using the socket.
+
+How a server can identify the application that created the socket?
+
+show how TCP does congestion avoidance

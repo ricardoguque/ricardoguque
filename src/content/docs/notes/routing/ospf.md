@@ -1,4 +1,0 @@
----
-title: OSPF
-description: OSPF
----
