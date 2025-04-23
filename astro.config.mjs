@@ -10,52 +10,55 @@ export default defineConfig({
   base: '/ricardoguque',
   integrations: [starlight({
     plugins: [starlightThemeRapide(),starlightClientMermaid({ /* options */ })],
-    title: 'Profile',
+    title: 'RGQ',
     logo: { src: './src/assets/yo.jpg' },
     lastUpdated: true,
     credits: true,
     editLink: {
       baseUrl: 'https://github.com/ricardoguque/ricardoguque/tree/main/',
     },
+    tableOfContents: {maxHeadingLevel: 4, minHeadingLevel: 2},
     social: [
       { icon: 'github', label: 'GitHub', href: 'https://github.com/ricardoguque' },
       { icon: 'linkedin', label: 'LinkedIn', href: 'https://www.linkedin.com/in/ricardo-gutierrez-b3446475' },
     ],
     sidebar: [
-      { label: 'Overview', link: '/overview', badge: { text: "WIP", variant: "caution"} },
+      'home',
       {
-        label: 'Study Notes',
+        label: 'Networking Notes',
         collapsed: false,
         items: [
-          { label: "Overview", link: 'notes/overview', badge: { text: "WIP", variant: "caution"}},
           { 
             label: 'Network Fundamentals', 
             items: [
-              "notes/nf/arp",
-              "notes/nf/dhcp",
-              "notes/nf/icmp",
-              "notes/nf/nat",
-              "notes/nf/tcp",
-              "notes/nf/udp",
-              "notes/nf/dns",
-              "notes/nf/ntp",
-            ]
-          },
-          { 
-            label: 'Routing', 
-            items: [
-              "notes/routing/ospf",
-              "notes/routing/bgp",
-              "notes/routing/isis",
+              // "networking/nf/mac",
+              "networking/nf/ip_addr",
+              // "networking/nf/arp",
+      //         "networking/nf/dhcp",
+      //         "networking/nf/icmp",
+      //         "networking/nf/nat",
+      //         "networking/nf/tcp",
+      //         "networking/nf/udp",
+      //         "networking/nf/dns",
+      //         "networking/nf/ntp",
+      //       ]
+      //     },
+      //     { 
+      //       label: 'Routing', 
+      //       items: [
+      //         "notes/routing/ospf",
+      //         "notes/routing/bgp",
+      //         "notes/routing/isis",
             ]
           }
         ],
       },
       {
-        label: 'How Tos',
+        label: 'How-To',
         collapsed: false,
         items: [
-              "how_to/iperf",
+          "how_to/iperf",
+          "how_to/containerlab",
         ]
       },
     ],
