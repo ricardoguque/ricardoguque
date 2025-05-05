@@ -1,0 +1,384 @@
+---
+title: ARP
+description: Address Resolution protocol
+---
+import { Steps } from '@astrojs/starlight/components';
+
+## What is ARP
+
+When a device is connected to a physical network it does not have a database of the IP to MAC address mapping. It needs to know how to build the Ethernet frame and encapsulate the IP packet on it. This is done by using the Address Resolution Protocol (ARP).
+
+ARP is a protocol that works on the L2 layer, it is not routable and only works on the same broadcast domain. 
+
+:::note
+ARP can operate with other data link protocols as Ethernet but in this document we will be using Ethernet as the data link protocol.
+:::
+
+## When ARP is used
+
+1. When a device needs to send a IP packet to another device on the same broadcast domain, it needs to know the MAC address of the destination device. 
+2. When a device needs to send a IP packet to another device on a different broadcast domain, it needs to know the MAC address of the default gateway.
+
+## ARP process
+<Steps>
+1. The device A sends a ARP request to the broadcast address asking for the MAC address of the destination IP address.
+2. The device B that has the destination IP address will respond unicast with a ARP reply with its MAC address.
+3. The device A that sent the ARP request will receive the ARP reply and will update its ARP table with the IP to MAC address mapping.
+4. The device A will then send the IP packet to the destination MAC address.
+5. The device A or B can continue sending ARP requests to refresh the ARP cache but in this case it will be unicast to the other device
+6. The device A or B will respond with a ARP reply with its MAC address and will update its ARP table.
+</Steps>
+
+
+After the ARP process is completed, each device continues sending ARP requests 
+
+## ARP Messages in action
+
+Lets use the following example to understand the 2 ARP messages request and reply. I force a Ubuntu server to send an ARP request to a host in same boradcast domain by clearing the ARP cache.
+
+<Steps>
+1. Identify the ARP entry before clearing the ARP cache
+    ```bash
+    richo@richo-HCAR5000-MI:~$ arp -n | grep 172.16.1.69
+    172.16.1.69              ether   14:eb:b6:b0:e2:bc   C                     enp3s0
+    ```
+2. Identify the MAC and IP of our interface to help understanding a packet capture
+    ```bash
+    richo@richo-HCAR5000-MI:~$ sudo ip add show enp3s0 | grep -E "172.16.1.31|ether"
+        link/ether c8:ff:bf:00:e8:d9 brd ff:ff:ff:ff:ff:ff
+        inet 172.16.1.31/24 brd 172.16.1.255 scope global dynamic noprefixroute enp3s0
+    ```
+3. Start a packet capture to match the ARP packets
+    ```bash
+    richo@richo-HCAR5000-MI:~$ sudo tcpdump -n host 172.16.1.69 and arp
+    tcpdump: verbose output suppressed, use -v[v]... for full protocol decode
+    listening on enp3s0, link-type EN10MB (Ethernet), snapshot length 262144 bytes
+    ```
+4. Delete the ARP entry for ip 172.100.100.2, confirm is deleted and send a pinc to force ARP
+    ```bash
+    richo@richo-HCAR5000-MI:~$ sudo arp -d 172.16.1.69; arp -n | grep 172.16.1.69; ping 172.16.1.69 -c 2
+    PING 172.16.1.69 (172.16.1.69) 56(84) bytes of data.
+    64 bytes from 172.16.1.69: icmp_seq=1 ttl=64 time=0.666 ms
+    64 bytes from 172.16.1.69: icmp_seq=2 ttl=64 time=0.348 ms
+
+    --- 172.16.1.69 ping statistics ---
+    2 packets transmitted, 2 received, 0% packet loss, time 1048ms
+    rtt min/avg/max/mdev = 0.348/0.507/0.666/0.159 ms
+    ```
+5. Check the packet capture and see the initial request/reply and the request/reply to refresh the ARP cache
+    ```bash
+    17:15:53.496363 c8:ff:bf:00:e8:d9 > ff:ff:ff:ff:ff:ff, ethertype ARP (0x0806), length 42: Request who-has 172.16.1.69 tell 172.16.1.31, length 28
+    17:15:53.496682 14:eb:b6:b0:e2:bc > c8:ff:bf:00:e8:d9, ethertype ARP (0x0806), length 60: Reply 172.16.1.69 is-at 14:eb:b6:b0:e2:bc, length 46
+    17:16:03.838558 14:eb:b6:b0:e2:bc > c8:ff:bf:00:e8:d9, ethertype ARP (0x0806), length 60: Request who-has 172.16.1.31 tell 172.16.1.69, length 46
+    17:16:03.838575 c8:ff:bf:00:e8:d9 > 14:eb:b6:b0:e2:bc, ethertype ARP (0x0806), length 42: Reply 172.16.1.31 is-at c8:ff:bf:00:e8:d9, length 28
+    ```
+</Steps>
+
+## ARP headers
+The ARP header is 28 bytes long and contains the fields described on the table below:
+| Field Name              | Description                                                                 |
+|-------------------------|-----------------------------------------------------------------------------|
+| Hardware type (2 bytes) | Type of hardware used (Ethernet, Token Ring, etc.)                          |
+| Protocol type (2 bytes) | Type of protocol used (IPv4, IPv6, etc.)                                   |
+| Hardware length (1 byte)  | Length of the hardware address (usually 6 bytes for Ethernet)         |
+| Protocol length (1 byte)  | Length of the protocol address (usually 4 bytes for IPv4)             |
+| Protocol length (1 byte)  |                                    |
+| Operation (2 bytes)     | Type of ARP message (request or reply)                                      |
+| Sender hardware address (6 bytes) | Hardware address of the sender (MAC address)                      |
+| Sender protocol address (4 bytes) | Protocol address of the sender (IPv4 address)                      |
+| Target hardware address (6 bytes) | Hardware address of the target (MAC address)                      |
+| Target protocol address (4 bytes) | Protocol address of the target (IPv4 address)                      |
+
+For example with the capture done in the former example we can see the following for the 4 frames:
+
+<Steps>
+1. ARP request from A to B
+    ```bash
+    Address Resolution Protocol (request)
+        Hardware type: Ethernet (1)
+        Protocol type: IPv4 (0x0800)
+        Hardware size: 6
+        Protocol size: 4
+        Opcode: request (1)
+        Sender MAC address: c8:ff:bf:00:e8:d9
+        Sender IP address: 172.16.1.31
+        Target MAC address: 00:00:00:00:00:00
+        Target IP address: 172.16.1.69
+    ```
+2. ARP reply from B to A
+    ```bash
+    Address Resolution Protocol (reply)
+        Hardware type: Ethernet (1)
+        Protocol type: IPv4 (0x0800)
+        Hardware size: 6
+        Protocol size: 4
+        Opcode: reply (2)
+        Sender MAC address: 14:eb:b6:b0:e2:bc
+        Sender IP address: 172.16.1.69
+        Target MAC address: c8:ff:bf:00:e8:d9
+        Target IP address: 172.16.1.31
+    ```
+3. ARP request from B to A to refresh the ARP cache
+    ```bash
+    Address Resolution Protocol (request)
+        Hardware type: Ethernet (1)
+        Protocol type: IPv4 (0x0800)
+        Hardware size: 6
+        Protocol size: 4
+        Opcode: request (1)
+        Sender MAC address: 14:eb:b6:b0:e2:bc
+        Sender IP address: 172.16.1.69
+        Target MAC address: 00:00:00:00:00:00
+        Target IP address: 172.16.1.31
+    ```
+4. ARP reply from A to B to refresh the ARP cache
+    ```bash
+    Address Resolution Protocol (reply)
+        Hardware type: Ethernet (1)
+        Protocol type: IPv4 (0x0800)
+        Hardware size: 6
+        Protocol size: 4
+        Opcode: reply (2)
+        Sender MAC address: c8:ff:bf:00:e8:d9
+        Sender IP address: 172.16.1.31
+        Target MAC address: 14:eb:b6:b0:e2:bc
+        Target IP address: 172.16.1.69
+    ```
+</Steps>
+<details>
+<summary>Complete packet capture</summary>
+```bash
+richo@richo-HCAR5000-MI:~$ sudo tshark -nV -i enp3s0 -Y "arp.dst.proto_ipv4 == 172.16.1.69 or arp.src.proto_ipv4 == 172.16.1.69"
+Running as user "root" and group "root". This could be dangerous.
+Capturing on 'enp3s0'
+ ** (tshark:7494) 17:36:53.420189 [Main MESSAGE] -- Capture started.
+ ** (tshark:7494) 17:36:53.420247 [Main MESSAGE] -- File: "/tmp/wireshark_enp3s0MVFQ52.pcapng"
+Frame 4: 42 bytes on wire (336 bits), 42 bytes captured (336 bits) on interface enp3s0, id 0
+    Interface id: 0 (enp3s0)
+        Interface name: enp3s0
+    Encapsulation type: Ethernet (1)
+    Arrival Time: Apr 23, 2025 17:36:53.638726755 PDT
+    [Time shift for this packet: 0.000000000 seconds]
+    Epoch Time: 1745455013.638726755 seconds
+    [Time delta from previous captured frame: 0.011487808 seconds]
+    [Time delta from previous displayed frame: 0.000000000 seconds]
+    [Time since reference or first frame: 0.218363649 seconds]
+    Frame Number: 4
+    Frame Length: 42 bytes (336 bits)
+    Capture Length: 42 bytes (336 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    [Protocols in frame: eth:ethertype:arp]
+Ethernet II, Src: c8:ff:bf:00:e8:d9, Dst: ff:ff:ff:ff:ff:ff
+    Destination: ff:ff:ff:ff:ff:ff
+        Address: ff:ff:ff:ff:ff:ff
+        .... ..1. .... .... .... .... = LG bit: Locally administered address (this is NOT the factory default)
+        .... ...1 .... .... .... .... = IG bit: Group address (multicast/broadcast)
+    Source: c8:ff:bf:00:e8:d9
+        Address: c8:ff:bf:00:e8:d9
+        .... ..0. .... .... .... .... = LG bit: Globally unique address (factory default)
+        .... ...0 .... .... .... .... = IG bit: Individual address (unicast)
+    Type: ARP (0x0806)
+Address Resolution Protocol (request)
+    Hardware type: Ethernet (1)
+    Protocol type: IPv4 (0x0800)
+    Hardware size: 6
+    Protocol size: 4
+    Opcode: request (1)
+    Sender MAC address: c8:ff:bf:00:e8:d9
+    Sender IP address: 172.16.1.31
+    Target MAC address: 00:00:00:00:00:00
+    Target IP address: 172.16.1.69
+
+Frame 6: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface enp3s0, id 0
+    Interface id: 0 (enp3s0)
+        Interface name: enp3s0
+    Encapsulation type: Ethernet (1)
+    Arrival Time: Apr 23, 2025 17:36:53.638952495 PDT
+    [Time shift for this packet: 0.000000000 seconds]
+    Epoch Time: 1745455013.638952495 seconds
+    [Time delta from previous captured frame: 0.000206413 seconds]
+    [Time delta from previous displayed frame: 0.000225740 seconds]
+    [Time since reference or first frame: 0.218589389 seconds]
+    Frame Number: 6
+    Frame Length: 60 bytes (480 bits)
+    Capture Length: 60 bytes (480 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    [Protocols in frame: eth:ethertype:arp]
+Ethernet II, Src: 14:eb:b6:b0:e2:bc, Dst: c8:ff:bf:00:e8:d9
+    Destination: c8:ff:bf:00:e8:d9
+        Address: c8:ff:bf:00:e8:d9
+        .... ..0. .... .... .... .... = LG bit: Globally unique address (factory default)
+        .... ...0 .... .... .... .... = IG bit: Individual address (unicast)
+    Source: 14:eb:b6:b0:e2:bc
+        Address: 14:eb:b6:b0:e2:bc
+        .... ..0. .... .... .... .... = LG bit: Globally unique address (factory default)
+        .... ...0 .... .... .... .... = IG bit: Individual address (unicast)
+    Type: ARP (0x0806)
+    Padding: 000000000000000000000000000000000000
+Address Resolution Protocol (reply)
+    Hardware type: Ethernet (1)
+    Protocol type: IPv4 (0x0800)
+    Hardware size: 6
+    Protocol size: 4
+    Opcode: reply (2)
+    Sender MAC address: 14:eb:b6:b0:e2:bc
+    Sender IP address: 172.16.1.69
+    Target MAC address: c8:ff:bf:00:e8:d9
+    Target IP address: 172.16.1.31
+
+Frame 28: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface enp3s0, id 0
+    Interface id: 0 (enp3s0)
+        Interface name: enp3s0
+    Encapsulation type: Ethernet (1)
+    Arrival Time: Apr 23, 2025 17:36:55.671676730 PDT
+    [Time shift for this packet: 0.000000000 seconds]
+    Epoch Time: 1745455015.671676730 seconds
+    [Time delta from previous captured frame: 0.761401664 seconds]
+    [Time delta from previous displayed frame: 2.032724235 seconds]
+    [Time since reference or first frame: 2.251313624 seconds]
+    Frame Number: 28
+    Frame Length: 60 bytes (480 bits)
+    Capture Length: 60 bytes (480 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    [Protocols in frame: eth:ethertype:arp]
+Ethernet II, Src: 14:eb:b6:b0:e2:bc, Dst: c8:ff:bf:00:e8:d9
+    Destination: c8:ff:bf:00:e8:d9
+        Address: c8:ff:bf:00:e8:d9
+        .... ..0. .... .... .... .... = LG bit: Globally unique address (factory default)
+        .... ...0 .... .... .... .... = IG bit: Individual address (unicast)
+    Source: 14:eb:b6:b0:e2:bc
+        Address: 14:eb:b6:b0:e2:bc
+        .... ..0. .... .... .... .... = LG bit: Globally unique address (factory default)
+        .... ...0 .... .... .... .... = IG bit: Individual address (unicast)
+    Type: ARP (0x0806)
+    Padding: 000000000000000000000000000000000000
+Address Resolution Protocol (request)
+    Hardware type: Ethernet (1)
+    Protocol type: IPv4 (0x0800)
+    Hardware size: 6
+    Protocol size: 4
+    Opcode: request (1)
+    Sender MAC address: 14:eb:b6:b0:e2:bc
+    Sender IP address: 172.16.1.69
+    Target MAC address: 00:00:00:00:00:00
+    Target IP address: 172.16.1.31
+
+Frame 29: 42 bytes on wire (336 bits), 42 bytes captured (336 bits) on interface enp3s0, id 0
+    Interface id: 0 (enp3s0)
+        Interface name: enp3s0
+    Encapsulation type: Ethernet (1)
+    Arrival Time: Apr 23, 2025 17:36:55.671693463 PDT
+    [Time shift for this packet: 0.000000000 seconds]
+    Epoch Time: 1745455015.671693463 seconds
+    [Time delta from previous captured frame: 0.000016733 seconds]
+    [Time delta from previous displayed frame: 0.000016733 seconds]
+    [Time since reference or first frame: 2.251330357 seconds]
+    Frame Number: 29
+    Frame Length: 42 bytes (336 bits)
+    Capture Length: 42 bytes (336 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    [Protocols in frame: eth:ethertype:arp]
+Ethernet II, Src: c8:ff:bf:00:e8:d9, Dst: 14:eb:b6:b0:e2:bc
+    Destination: 14:eb:b6:b0:e2:bc
+        Address: 14:eb:b6:b0:e2:bc
+        .... ..0. .... .... .... .... = LG bit: Globally unique address (factory default)
+        .... ...0 .... .... .... .... = IG bit: Individual address (unicast)
+    Source: c8:ff:bf:00:e8:d9
+        Address: c8:ff:bf:00:e8:d9
+        .... ..0. .... .... .... .... = LG bit: Globally unique address (factory default)
+        .... ...0 .... .... .... .... = IG bit: Individual address (unicast)
+    Type: ARP (0x0806)
+Address Resolution Protocol (reply)
+    Hardware type: Ethernet (1)
+    Protocol type: IPv4 (0x0800)
+    Hardware size: 6
+    Protocol size: 4
+    Opcode: reply (2)
+    Sender MAC address: c8:ff:bf:00:e8:d9
+    Sender IP address: 172.16.1.31
+    Target MAC address: 14:eb:b6:b0:e2:bc
+    Target IP address: 172.16.1.69
+```
+:::caution
+For the unicast request from 14:eb:b6:b0:e2:bc to c8:ff:bf:00:e8:d9, even when the Ethernet header shows is unicast the ARP message shows the `Target MAC address: 00:00:00:00:00:00`, this is seems to be something not standard but used to reduce ARP messages in the network
+:::
+</details>
+
+## ARP table/cache
+
+The ARP table is a cache that stores the IP to MAC address mapping. The ARP table is used to speed up the ARP process and reduce the number of ARP requests sent on the network.
+
+The following are examples of the ARP table on different devices:
+
+```bash title="Linux ARP table"
+richo@richo-HCAR5000-MI:~$ arp -n
+Address                  HWtype  HWaddress           Flags Mask            Iface
+172.16.1.1               ether   d4:b9:2f:4d:31:42   C                     enp3s0
+172.16.1.56                      (incomplete)                              enp3s0
+172.100.100.2            ether   02:42:ac:64:64:02   C                     br-a48aa2668b65
+172.100.100.3            ether   02:42:ac:64:64:03   C                     br-a48aa2668b65
+172.16.1.116             ether   44:a3:bb:3c:9e:70   C                     enp3s0
+172.100.100.6            ether   02:42:ac:64:64:06   C                     br-a48aa2668b65
+172.100.100.4            ether   02:42:ac:64:64:04   C                     br-a48aa2668b65
+172.16.1.69              ether   14:eb:b6:b0:e2:bc   C                     enp3s0
+172.16.1.1               ether   d4:b9:2f:4d:31:42   C                     wlp2s0
+```
+```bash title="Arista ARP table"
+r1#show ip arp
+Address         Age (sec)  Hardware Addr   Interface
+172.100.100.1     0:00:00  0242.3b04.4e73  Management0
+172.100.100.6     0:00:04  0242.ac64.6406  Management0
+```
+
+To avoid having stale entries in the ARP table 2 ways can be implemented:
+- Timeout: to define how long the entry will be kept in the ARP table. The timeout is different per OS, for example in Linux the default is 60 seconds and in Windows is 2 minutes.
+- Refresh: to refresh the ARP table every certain time. This is done by sending a ARP request to the IP address in the ARP table. 
+
+## Proxy ARP
+
+This is a technique used by routers to respond to ARP requests on behalf of other devices located on a different network (broadcast domain). 
+
+The use cases are not very common and it is avoided so I will not fucus much on this.
+
+## Gratuitous ARP
+
+This happends when a device sends an ARP request to the broadcast address asking for its own IP address. This is used to update the ARP table of other devices on the network with the MAC address of the sender.
+
+The message does not expect a reply but if someoen reply to the ARP request that also can be used to know someone else already have the IP address.
+
+Use cases:
+- In the FHR (First Hop Redundancy) protocols like HSRP, VRRP, GLBP to inform the other devices of the new active router.
+- In cluster servers to inform the other devices of the new active server.
+- In some network OS after enabling a interface it sends a GARP so the devices in the network update/add the entry in their table.
+
+The following is an example of a GARP message:
+```bash title="GARP message"
+Ethernet II, Src: 02:42:ac:64:64:02 (02:42:ac:64:64:02), Dst: Broadcast (ff:ff:ff:ff:ff:ff)
+    Destination: Broadcast (ff:ff:ff:ff:ff:ff)
+        Address: Broadcast (ff:ff:ff:ff:ff:ff)
+        .... ..1. .... .... .... .... = LG bit: Locally administered address (this is NOT the factory default)
+        .... ...1 .... .... .... .... = IG bit: Group address (multicast/broadcast)
+    Source: 02:42:ac:64:64:02 (02:42:ac:64:64:02)
+        Address: 02:42:ac:64:64:02 (02:42:ac:64:64:02)
+        .... ..1. .... .... .... .... = LG bit: Locally administered address (this is NOT the factory default)
+        .... ...0 .... .... .... .... = IG bit: Individual address (unicast)
+    Type: ARP (0x0806)
+Address Resolution Protocol (request/gratuitous ARP)
+    Hardware type: Ethernet (1)
+    Protocol type: IPv4 (0x0800)
+    Hardware size: 6
+    Protocol size: 4
+    Opcode: request (1)
+    [Is gratuitous: True]
+    Sender MAC address: 02:42:ac:64:64:02 (02:42:ac:64:64:02)
+    Sender IP address: 172.100.100.2
+    Target MAC address: Broadcast (ff:ff:ff:ff:ff:ff)
+    Target IP address: 172.100.100.2
+```
+:::note
+Note that the target IP is same as the sender IP and the target MAC is the broadcast address. This is how the GARP message is identified and the way duplicate IP addresses are detected.
+:::

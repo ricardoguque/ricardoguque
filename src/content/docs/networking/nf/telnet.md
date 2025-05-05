@@ -1,4 +1,0 @@
----
-title: Telnet
-description: Telnet
----

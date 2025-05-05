@@ -1,4 +1,0 @@
----
-title: NTP
-description: NTP
----

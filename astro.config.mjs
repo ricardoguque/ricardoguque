@@ -9,7 +9,7 @@ export default defineConfig({
   site: 'https://ricardoguque.github.io',
   base: '/ricardoguque',
   integrations: [starlight({
-    plugins: [starlightThemeRapide(),starlightClientMermaid({ /* options */ })],
+    plugins: [starlightThemeRapide(),starlightClientMermaid({})],
     title: 'RGQ',
     logo: { src: './src/assets/yo.jpg' },
     lastUpdated: true,
@@ -28,12 +28,14 @@ export default defineConfig({
         label: 'Networking Notes',
         collapsed: false,
         items: [
+          "networking/intro",
           { 
             label: 'Network Fundamentals', 
             items: [
-              // "networking/nf/mac",
+              "networking/nf/mac",
               "networking/nf/ip_addr",
-              // "networking/nf/arp",
+              "networking/nf/arp",
+              "networking/nf/ipv4",
       //         "networking/nf/dhcp",
       //         "networking/nf/icmp",
       //         "networking/nf/nat",

@@ -1,4 +1,0 @@
----
-title: TFTP
-description: TFTP
----
