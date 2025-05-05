@@ -4,6 +4,7 @@ description: Internet Protocol Version 4
 ---
 
 import { Steps } from '@astrojs/starlight/components';
+import { Tabs, TabItem } from '@astrojs/starlight/components';
 
 IP (Internet Protocol) is a common protocol used in the TCP/IP suit. All applications that need to communicate over the internet will use IP to encapsulate the application data. It is a best effort protocol because it does not guarantee the delivery of the data. It is a connectionless protocol because it does not establish a connection before sending the data. Instead it will rely on the transport layer to establish a connection if needed.
 
@@ -225,6 +226,722 @@ The following is a step by step about how the IP fragmentation works
 The fragmentation process is done by the routers in the path to the destination. The sender and receiver do not need to be aware of the fragmentation process.
 :::
 
+### Fragmentation example
+#### Lab setup
+
+We will test this with the following topology 
+```yml
+name: ip_fragmentation
+mgmt:
+  network: mgmt
+  ipv4-subnet: 10.0.0.0/24
+topology:
+  nodes:
+    r1:
+      kind: ceos
+      image: ceos:4.32.2F
+      mgmt-ipv4: 10.0.0.2
+    r2:
+      kind: ceos
+      image: ceos:4.32.2F
+      mgmt-ipv4: 10.0.0.3
+    r3:
+      kind: ceos
+      image: ceos:4.32.2F
+      mgmt-ipv4: 10.0.0.4
+  links:
+    - endpoints: ["r1:eth1", "r2:eth1"]
+    - endpoints: ["r2:eth2", "r3:eth2"]
+```
+Where we will need to add the follwing config to the r1 node:
+<Tabs>
+  <TabItem label="r1">
+    ```bash
+    enable
+    configure
+    ip routing
+    ip route 10.0.2.0/24 10.0.1.1
+    interface eth1
+      no switchport
+      ip address 10.0.1.2/24
+    ```
+  </TabItem>
+  <TabItem label="r2">
+    ```bash 
+    enable
+    configure
+    ip routing
+    interface eth1
+      no switchport
+      ip address 10.0.1.1/24
+    interface eth2
+      no switchport
+      ip address 10.0.2.1/24
+    ```
+  </TabItem>
+  <TabItem label="r3">
+    ```bash
+    enable
+    configure
+    ip routing
+    ip route 10.0.1.0/24 10.0.2.1
+    interface eth2
+      no switchport
+      ip address 10.0.2.2/24
+    ```
+  </TabItem>
+</Tabs>
+So then we have the following interfaces 
+```bash
+r2#show ip int br
+                                                                           Address
+Interface         IP Address        Status       Protocol           MTU    Owner
+----------------- ----------------- ------------ -------------- ---------- -------
+Ethernet1         10.0.1.1/24       up           up                1500
+Ethernet2         10.0.2.1/24       up           up                1500
+Management0       10.0.0.3/24       up           up                1500
+```
+Where we are learning the arp from the 2 hosts
+```bash
+r2#show ip arp
+Address         Age (sec)  Hardware Addr   Interface
+10.0.1.2          0:02:30  aac1.ab8b.703a  Ethernet1
+10.0.2.2          0:02:34  aac1.ab70.33d4  Ethernet2
+10.0.0.1          0:00:00  0242.eac2.81c1  Management0
+```
+#### MTU status
+The following is the IP MTU on the router's interfaces
+<Tabs>
+  <TabItem label="r1">
+    ```bash title="r1 IP MTU"
+    r1#show interfaces ethernet 1 | include MTU
+      IP MTU 1500 bytes (default), BW 1000000 kbit
+    ```
+  </TabItem>
+  <TabItem label="r2">
+    ```bash title="r2 IP MTU"
+    r2#show interfaces ethernet 1-2 | include MTU
+      IP MTU 1500 bytes, BW 1000000 kbit
+      IP MTU 1500 bytes, BW 1000000 kbit
+    ```
+  </TabItem>
+  <TabItem label="r3">
+    ```bash title="r3 IP MTU"
+    r3#show interfaces ethernet 2 | include MTU
+      IP MTU 1500 bytes (default), BW 1000000 kbit
+    ```
+  </TabItem>
+</Tabs>
+#### Test with no need for fragmentation
+Since the lower MTU in the path is 1500, doing the following ping with a size of 400 the we do not see a need for fragmentation
+<Tabs>
+  <TabItem label="Ping from r1">
+    ```bash title="Ping from r1 to r3"
+    r1#ping 10.0.2.2 repeat 2
+    PING 10.0.2.2 (10.0.2.2) 72(100) bytes of data.
+    80 bytes from 10.0.2.2: icmp_seq=1 ttl=63 time=0.625 ms
+    80 bytes from 10.0.2.2: icmp_seq=2 ttl=63 time=0.273 ms
+
+    --- 10.0.2.2 ping statistics ---
+    2 packets transmitted, 2 received, 0% packet loss, time 1ms
+    rtt min/avg/max/mdev = 0.273/0.449/0.625/0.176 ms, ipg/ewma 1.001/0.581 ms
+    ```
+  </TabItem>
+  <TabItem label="Capture on r2">
+    ```bash title="Request and reply seen on r2"
+    r2#tcpdump verbose interface ethernet 1 filter icmp
+    tcpdump: listening on eth1, link-type EN10MB (Ethernet), snapshot length 262144 bytes
+    22:56:28.360467 aa:c1:ab:28:a6:bd > aa:c1:ab:35:ed:79, ethertype IPv4 (0x0800), length 114: (tos 0x0, ttl 64, id 2537, offset 0, flags [none], proto ICMP (1), length 100)
+        10.0.1.2 > 10.0.2.2: ICMP echo request, id 13, seq 1, length 80
+    22:56:28.361046 aa:c1:ab:35:ed:79 > aa:c1:ab:28:a6:bd, ethertype IPv4 (0x0800), length 114: (tos 0x0, ttl 63, id 42203, offset 0, flags [none], proto ICMP (1), length 100)
+        10.0.2.2 > 10.0.1.2: ICMP echo reply, id 13, seq 1, length 80
+    22:56:28.361447 aa:c1:ab:28:a6:bd > aa:c1:ab:35:ed:79, ethertype IPv4 (0x0800), length 114: (tos 0x0, ttl 64, id 2538, offset 0, flags [none], proto ICMP (1), length 100)
+        10.0.1.2 > 10.0.2.2: ICMP echo request, id 13, seq 2, length 80
+    22:56:28.361662 aa:c1:ab:35:ed:79 > aa:c1:ab:28:a6:bd, ethertype IPv4 (0x0800), length 114: (tos 0x0, ttl 63, id 42204, offset 0, flags [none], proto ICMP (1), length 100)
+        10.0.2.2 > 10.0.1.2: ICMP echo reply, id 13, seq 2, length 80
+    ```
+  </TabItem>
+  <TabItem label="Capture on r3">
+    ```bash title="Request and reply seen on r3"
+    r3#tcpdump verbose interface ethernet 2 filter icmp
+    tcpdump: listening on eth2, link-type EN10MB (Ethernet), snapshot length 262144 bytes
+    22:56:28.360892 aa:c1:ab:75:ba:fa > aa:c1:ab:7d:bb:26, ethertype IPv4 (0x0800), length 114: (tos 0x0, ttl 63, id 2537, offset 0, flags [none], proto ICMP (1), length 100)
+        10.0.1.2 > 10.0.2.2: ICMP echo request, id 13, seq 1, length 80
+    22:56:28.360930 aa:c1:ab:7d:bb:26 > aa:c1:ab:75:ba:fa, ethertype IPv4 (0x0800), length 114: (tos 0x0, ttl 64, id 42203, offset 0, flags [none], proto ICMP (1), length 100)
+        10.0.2.2 > 10.0.1.2: ICMP echo reply, id 13, seq 1, length 80
+    22:56:28.361565 aa:c1:ab:75:ba:fa > aa:c1:ab:7d:bb:26, ethertype IPv4 (0x0800), length 114: (tos 0x0, ttl 63, id 2538, offset 0, flags [none], proto ICMP (1), length 100)
+        10.0.1.2 > 10.0.2.2: ICMP echo request, id 13, seq 2, length 80
+    22:56:28.361579 aa:c1:ab:7d:bb:26 > aa:c1:ab:75:ba:fa, ethertype IPv4 (0x0800), length 114: (tos 0x0, ttl 64, id 42204, offset 0, flags [none], proto ICMP (1), length 100)
+        10.0.2.2 > 10.0.1.2: ICMP echo reply, id 13, seq 2, length 80
+    ```
+  </TabItem>
+</Tabs>
+:::note
+As we can see the packets are not fragmented and the size of the packets is 80 bytes which is the default size for the ping command.
+:::
+#### Test with fragmentation
+Now we will do the same test but with a size of 2000 bytes which is larger than the MTU of the path (1500 bytes) so we will see the fragmentation process in action.
+
+<Tabs>
+  <TabItem label="Ping from r1">
+    ```bash title="Ping from r1"
+    r1#ping 10.0.2.2 size 2000 repeat 2
+    PING 10.0.2.2 (10.0.2.2) 1972(2000) bytes of data.
+    1980 bytes from 10.0.2.2: icmp_seq=1 ttl=63 time=0.813 ms
+    1980 bytes from 10.0.2.2: icmp_seq=2 ttl=63 time=0.450 ms
+
+    --- 10.0.2.2 ping statistics ---
+    2 packets transmitted, 2 received, 0% packet loss, time 1ms
+    rtt min/avg/max/mdev = 0.450/0.631/0.813/0.181 ms, ipg/ewma 1.001/0.767 ms
+    ```
+  </TabItem>
+  <TabItem label="Capture on r2">
+    ```bash title="Capture on r2 with fragmentation"
+    r2#tcpdump verbose interface ethernet 1 filter icmp
+    tcpdump: listening on eth1, link-type EN10MB (Ethernet), snapshot length 262144 bytes
+    22:57:58.471775 aa:c1:ab:28:a6:bd > aa:c1:ab:35:ed:79, ethertype IPv4 (0x0800), length 1514: (tos 0x0, ttl 64, id 13867, offset 0, flags [+], proto ICMP (1), length 1500)
+        10.0.1.2 > 10.0.2.2: ICMP echo request, id 14, seq 1, length 1480
+    22:57:58.471790 aa:c1:ab:28:a6:bd > aa:c1:ab:35:ed:79, ethertype IPv4 (0x0800), length 534: (tos 0x0, ttl 64, id 13867, offset 1480, flags [none], proto ICMP (1), length 520)
+        10.0.1.2 > 10.0.2.2: ip-proto-1
+    22:57:58.472467 aa:c1:ab:35:ed:79 > aa:c1:ab:28:a6:bd, ethertype IPv4 (0x0800), length 1514: (tos 0x0, ttl 63, id 25350, offset 0, flags [+], proto ICMP (1), length 1500)
+        10.0.2.2 > 10.0.1.2: ICMP echo reply, id 14, seq 1, length 1480
+    22:57:58.472550 aa:c1:ab:35:ed:79 > aa:c1:ab:28:a6:bd, ethertype IPv4 (0x0800), length 534: (tos 0x0, ttl 63, id 25350, offset 1480, flags [none], proto ICMP (1), length 520)
+        10.0.2.2 > 10.0.1.2: ip-proto-1
+    22:57:58.472759 aa:c1:ab:28:a6:bd > aa:c1:ab:35:ed:79, ethertype IPv4 (0x0800), length 1514: (tos 0x0, ttl 64, id 13868, offset 0, flags [+], proto ICMP (1), length 1500)
+        10.0.1.2 > 10.0.2.2: ICMP echo request, id 14, seq 2, length 1480
+    22:57:58.472765 aa:c1:ab:28:a6:bd > aa:c1:ab:35:ed:79, ethertype IPv4 (0x0800), length 534: (tos 0x0, ttl 64, id 13868, offset 1480, flags [none], proto ICMP (1), length 520)
+        10.0.1.2 > 10.0.2.2: ip-proto-1
+    22:57:58.473091 aa:c1:ab:35:ed:79 > aa:c1:ab:28:a6:bd, ethertype IPv4 (0x0800), length 1514: (tos 0x0, ttl 63, id 25351, offset 0, flags [+], proto ICMP (1), length 1500)
+        10.0.2.2 > 10.0.1.2: ICMP echo reply, id 14, seq 2, length 1480
+    22:57:58.473187 aa:c1:ab:35:ed:79 > aa:c1:ab:28:a6:bd, ethertype IPv4 (0x0800), length 534: (tos 0x0, ttl 63, id 25351, offset 1480, flags [none], proto ICMP (1), length 520)
+        10.0.2.2 > 10.0.1.2: ip-proto-1
+    ```
+  </TabItem>
+  <TabItem label="Capture on r3">
+    ```bash title="Capture on r3 with fragmentation"
+    r3#tcpdump verbose interface ethernet 2 filter icmp
+    tcpdump: listening on eth2, link-type EN10MB (Ethernet), snapshot length 262144 bytes
+    22:57:58.472210 aa:c1:ab:75:ba:fa > aa:c1:ab:7d:bb:26, ethertype IPv4 (0x0800), length 1514: (tos 0x0, ttl 63, id 13867, offset 0, flags [+], proto ICMP (1), length 1500)
+        10.0.1.2 > 10.0.2.2: ICMP echo request, id 14, seq 1, length 1480
+    22:57:58.472331 aa:c1:ab:75:ba:fa > aa:c1:ab:7d:bb:26, ethertype IPv4 (0x0800), length 534: (tos 0x0, ttl 63, id 13867, offset 1480, flags [none], proto ICMP (1), length 520)
+        10.0.1.2 > 10.0.2.2: ip-proto-1
+    22:57:58.472363 aa:c1:ab:7d:bb:26 > aa:c1:ab:75:ba:fa, ethertype IPv4 (0x0800), length 1514: (tos 0x0, ttl 64, id 25350, offset 0, flags [+], proto ICMP (1), length 1500)
+        10.0.2.2 > 10.0.1.2: ICMP echo reply, id 14, seq 1, length 1480
+    22:57:58.472366 aa:c1:ab:7d:bb:26 > aa:c1:ab:75:ba:fa, ethertype IPv4 (0x0800), length 534: (tos 0x0, ttl 64, id 25350, offset 1480, flags [none], proto ICMP (1), length 520)
+        10.0.2.2 > 10.0.1.2: ip-proto-1
+    22:57:58.472893 aa:c1:ab:75:ba:fa > aa:c1:ab:7d:bb:26, ethertype IPv4 (0x0800), length 1514: (tos 0x0, ttl 63, id 13868, offset 0, flags [+], proto ICMP (1), length 1500)
+        10.0.1.2 > 10.0.2.2: ICMP echo request, id 14, seq 2, length 1480
+    22:57:58.472990 aa:c1:ab:75:ba:fa > aa:c1:ab:7d:bb:26, ethertype IPv4 (0x0800), length 534: (tos 0x0, ttl 63, id 13868, offset 1480, flags [none], proto ICMP (1), length 520)
+        10.0.1.2 > 10.0.2.2: ip-proto-1
+    22:57:58.473005 aa:c1:ab:7d:bb:26 > aa:c1:ab:75:ba:fa, ethertype IPv4 (0x0800), length 1514: (tos 0x0, ttl 64, id 25351, offset 0, flags [+], proto ICMP (1), length 1500)
+        10.0.2.2 > 10.0.1.2: ICMP echo reply, id 14, seq 2, length 1480
+    22:57:58.473007 aa:c1:ab:7d:bb:26 > aa:c1:ab:75:ba:fa, ethertype IPv4 (0x0800), length 534: (tos 0x0, ttl 64, id 25351, offset 1480, flags [none], proto ICMP (1), length 520)
+        10.0.2.2 > 10.0.1.2: ip-proto-1
+    ```
+  </TabItem>
+  <TabItem label="Tshark on r3">
+    ```bash title="Capture detail on r3"
+    richo@richo-HCAR5000-MI:~$ sudo ip netns exec clab-ip_fragmentation-r3 tshark -i eth2 -Y ip -V
+    Running as user "root" and group "root". This could be dangerous.
+    Capturing on 'eth2'
+    ** (tshark:16175) 16:11:00.440048 [Main MESSAGE] -- Capture started.
+    ** (tshark:16175) 16:11:00.440185 [Main MESSAGE] -- File: "/tmp/wireshark_eth2D7WC62.pcapng"
+    Frame 2: 1514 bytes on wire (12112 bits), 1514 bytes captured (12112 bits) on interface eth2, id 0
+        Interface id: 0 (eth2)
+            Interface name: eth2
+        Encapsulation type: Ethernet (1)
+        Arrival Time: May  5, 2025 16:11:04.547224990 PDT
+        [Time shift for this packet: 0.000000000 seconds]
+        Epoch Time: 1746486664.547224990 seconds
+        [Time delta from previous captured frame: 3.328295430 seconds]
+        [Time delta from previous displayed frame: 0.000000000 seconds]
+        [Time since reference or first frame: 3.328295430 seconds]
+        Frame Number: 2
+        Frame Length: 1514 bytes (12112 bits)
+        Capture Length: 1514 bytes (12112 bits)
+        [Frame is marked: False]
+        [Frame is ignored: False]
+        [Protocols in frame: eth:ethertype:ip:data]
+    Ethernet II, Src: aa:c1:ab:75:ba:fa (aa:c1:ab:75:ba:fa), Dst: aa:c1:ab:7d:bb:26 (aa:c1:ab:7d:bb:26)
+        Destination: aa:c1:ab:7d:bb:26 (aa:c1:ab:7d:bb:26)
+            Address: aa:c1:ab:7d:bb:26 (aa:c1:ab:7d:bb:26)
+            .... ..1. .... .... .... .... = LG bit: Locally administered address (this is NOT the factory default)
+            .... ...0 .... .... .... .... = IG bit: Individual address (unicast)
+        Source: aa:c1:ab:75:ba:fa (aa:c1:ab:75:ba:fa)
+            Address: aa:c1:ab:75:ba:fa (aa:c1:ab:75:ba:fa)
+            .... ..1. .... .... .... .... = LG bit: Locally administered address (this is NOT the factory default)
+            .... ...0 .... .... .... .... = IG bit: Individual address (unicast)
+        Type: IPv4 (0x0800)
+    Internet Protocol Version 4, Src: 10.0.1.2, Dst: 10.0.2.2
+        0100 .... = Version: 4
+        .... 0101 = Header Length: 20 bytes (5)
+        Differentiated Services Field: 0x00 (DSCP: CS0, ECN: Not-ECT)
+            0000 00.. = Differentiated Services Codepoint: Default (0)
+            .... ..00 = Explicit Congestion Notification: Not ECN-Capable Transport (0)
+        Total Length: 1500
+        Identification: 0x3586 (13702)
+        Flags: 0x20, More fragments
+            0... .... = Reserved bit: Not set
+            .0.. .... = Don't fragment: Not set
+            ..1. .... = More fragments: Set
+        ...0 0000 0000 0000 = Fragment Offset: 0
+        Time to Live: 63
+        Protocol: ICMP (1)
+        Header Checksum: 0x0998 [validation disabled]
+        [Header checksum status: Unverified]
+        Source Address: 10.0.1.2
+        Destination Address: 10.0.2.2
+    Data (1480 bytes)
+
+    Frame 3: 534 bytes on wire (4272 bits), 534 bytes captured (4272 bits) on interface eth2, id 0
+        Interface id: 0 (eth2)
+            Interface name: eth2
+        Encapsulation type: Ethernet (1)
+        Arrival Time: May  5, 2025 16:11:04.547352848 PDT
+        [Time shift for this packet: 0.000000000 seconds]
+        Epoch Time: 1746486664.547352848 seconds
+        [Time delta from previous captured frame: 0.000127858 seconds]
+        [Time delta from previous displayed frame: 0.000127858 seconds]
+        [Time since reference or first frame: 3.328423288 seconds]
+        Frame Number: 3
+        Frame Length: 534 bytes (4272 bits)
+        Capture Length: 534 bytes (4272 bits)
+        [Frame is marked: False]
+        [Frame is ignored: False]
+        [Protocols in frame: eth:ethertype:ip:icmp:data]
+    Ethernet II, Src: aa:c1:ab:75:ba:fa (aa:c1:ab:75:ba:fa), Dst: aa:c1:ab:7d:bb:26 (aa:c1:ab:7d:bb:26)
+        Destination: aa:c1:ab:7d:bb:26 (aa:c1:ab:7d:bb:26)
+            Address: aa:c1:ab:7d:bb:26 (aa:c1:ab:7d:bb:26)
+            .... ..1. .... .... .... .... = LG bit: Locally administered address (this is NOT the factory default)
+            .... ...0 .... .... .... .... = IG bit: Individual address (unicast)
+        Source: aa:c1:ab:75:ba:fa (aa:c1:ab:75:ba:fa)
+            Address: aa:c1:ab:75:ba:fa (aa:c1:ab:75:ba:fa)
+            .... ..1. .... .... .... .... = LG bit: Locally administered address (this is NOT the factory default)
+            .... ...0 .... .... .... .... = IG bit: Individual address (unicast)
+        Type: IPv4 (0x0800)
+    Internet Protocol Version 4, Src: 10.0.1.2, Dst: 10.0.2.2
+        0100 .... = Version: 4
+        .... 0101 = Header Length: 20 bytes (5)
+        Differentiated Services Field: 0x00 (DSCP: CS0, ECN: Not-ECT)
+            0000 00.. = Differentiated Services Codepoint: Default (0)
+            .... ..00 = Explicit Congestion Notification: Not ECN-Capable Transport (0)
+        Total Length: 520
+        Identification: 0x3586 (13702)
+        Flags: 0x00
+            0... .... = Reserved bit: Not set
+            .0.. .... = Don't fragment: Not set
+            ..0. .... = More fragments: Not set
+        ...0 0101 1100 1000 = Fragment Offset: 1480
+        Time to Live: 63
+        Protocol: ICMP (1)
+        Header Checksum: 0x2cb3 [validation disabled]
+        [Header checksum status: Unverified]
+        Source Address: 10.0.1.2
+        Destination Address: 10.0.2.2
+        [2 IPv4 Fragments (1980 bytes): #2(1480), #3(500)]
+            [Frame: 2, payload: 0-1479 (1480 bytes)]
+            [Frame: 3, payload: 1480-1979 (500 bytes)]
+            [Fragment count: 2]
+            [Reassembled IPv4 length: 1980]
+            [Reassembled IPv4 data: 080005a5001300018845196800000000d557080000000000101112131415161718191a1b…]
+    Internet Control Message Protocol
+        Type: 8 (Echo (ping) request)
+        Code: 0
+        Checksum: 0x05a5 [correct]
+        [Checksum Status: Good]
+        Identifier (BE): 19 (0x0013)
+        Identifier (LE): 4864 (0x1300)
+        Sequence Number (BE): 1 (0x0001)
+        Sequence Number (LE): 256 (0x0100)
+        Timestamp from icmp data: May  5, 2025 16:11:04.000000000 PDT
+        [Timestamp from icmp data (relative): 0.547352848 seconds]
+        Data (1964 bytes)
+
+    Frame 4: 1514 bytes on wire (12112 bits), 1514 bytes captured (12112 bits) on interface eth2, id 0
+        Interface id: 0 (eth2)
+            Interface name: eth2
+        Encapsulation type: Ethernet (1)
+        Arrival Time: May  5, 2025 16:11:04.547384011 PDT
+        [Time shift for this packet: 0.000000000 seconds]
+        Epoch Time: 1746486664.547384011 seconds
+        [Time delta from previous captured frame: 0.000031163 seconds]
+        [Time delta from previous displayed frame: 0.000031163 seconds]
+        [Time since reference or first frame: 3.328454451 seconds]
+        Frame Number: 4
+        Frame Length: 1514 bytes (12112 bits)
+        Capture Length: 1514 bytes (12112 bits)
+        [Frame is marked: False]
+        [Frame is ignored: False]
+        [Protocols in frame: eth:ethertype:ip:data]
+    Ethernet II, Src: aa:c1:ab:7d:bb:26 (aa:c1:ab:7d:bb:26), Dst: aa:c1:ab:75:ba:fa (aa:c1:ab:75:ba:fa)
+        Destination: aa:c1:ab:75:ba:fa (aa:c1:ab:75:ba:fa)
+            Address: aa:c1:ab:75:ba:fa (aa:c1:ab:75:ba:fa)
+            .... ..1. .... .... .... .... = LG bit: Locally administered address (this is NOT the factory default)
+            .... ...0 .... .... .... .... = IG bit: Individual address (unicast)
+        Source: aa:c1:ab:7d:bb:26 (aa:c1:ab:7d:bb:26)
+            Address: aa:c1:ab:7d:bb:26 (aa:c1:ab:7d:bb:26)
+            .... ..1. .... .... .... .... = LG bit: Locally administered address (this is NOT the factory default)
+            .... ...0 .... .... .... .... = IG bit: Individual address (unicast)
+        Type: IPv4 (0x0800)
+    Internet Protocol Version 4, Src: 10.0.2.2, Dst: 10.0.1.2
+        0100 .... = Version: 4
+        .... 0101 = Header Length: 20 bytes (5)
+        Differentiated Services Field: 0x00 (DSCP: CS0, ECN: Not-ECT)
+            0000 00.. = Differentiated Services Codepoint: Default (0)
+            .... ..00 = Explicit Congestion Notification: Not ECN-Capable Transport (0)
+        Total Length: 1500
+        Identification: 0xfb35 (64309)
+        Flags: 0x20, More fragments
+            0... .... = Reserved bit: Not set
+            .0.. .... = Don't fragment: Not set
+            ..1. .... = More fragments: Set
+        ...0 0000 0000 0000 = Fragment Offset: 0
+        Time to Live: 64
+        Protocol: ICMP (1)
+        Header Checksum: 0x42e8 [validation disabled]
+        [Header checksum status: Unverified]
+        Source Address: 10.0.2.2
+        Destination Address: 10.0.1.2
+    Data (1480 bytes)
+
+    Frame 5: 534 bytes on wire (4272 bits), 534 bytes captured (4272 bits) on interface eth2, id 0
+        Interface id: 0 (eth2)
+            Interface name: eth2
+        Encapsulation type: Ethernet (1)
+        Arrival Time: May  5, 2025 16:11:04.547387097 PDT
+        [Time shift for this packet: 0.000000000 seconds]
+        Epoch Time: 1746486664.547387097 seconds
+        [Time delta from previous captured frame: 0.000003086 seconds]
+        [Time delta from previous displayed frame: 0.000003086 seconds]
+        [Time since reference or first frame: 3.328457537 seconds]
+        Frame Number: 5
+        Frame Length: 534 bytes (4272 bits)
+        Capture Length: 534 bytes (4272 bits)
+        [Frame is marked: False]
+        [Frame is ignored: False]
+        [Protocols in frame: eth:ethertype:ip:icmp:data]
+    Ethernet II, Src: aa:c1:ab:7d:bb:26 (aa:c1:ab:7d:bb:26), Dst: aa:c1:ab:75:ba:fa (aa:c1:ab:75:ba:fa)
+        Destination: aa:c1:ab:75:ba:fa (aa:c1:ab:75:ba:fa)
+            Address: aa:c1:ab:75:ba:fa (aa:c1:ab:75:ba:fa)
+            .... ..1. .... .... .... .... = LG bit: Locally administered address (this is NOT the factory default)
+            .... ...0 .... .... .... .... = IG bit: Individual address (unicast)
+        Source: aa:c1:ab:7d:bb:26 (aa:c1:ab:7d:bb:26)
+            Address: aa:c1:ab:7d:bb:26 (aa:c1:ab:7d:bb:26)
+            .... ..1. .... .... .... .... = LG bit: Locally administered address (this is NOT the factory default)
+            .... ...0 .... .... .... .... = IG bit: Individual address (unicast)
+        Type: IPv4 (0x0800)
+    Internet Protocol Version 4, Src: 10.0.2.2, Dst: 10.0.1.2
+        0100 .... = Version: 4
+        .... 0101 = Header Length: 20 bytes (5)
+        Differentiated Services Field: 0x00 (DSCP: CS0, ECN: Not-ECT)
+            0000 00.. = Differentiated Services Codepoint: Default (0)
+            .... ..00 = Explicit Congestion Notification: Not ECN-Capable Transport (0)
+        Total Length: 520
+        Identification: 0xfb35 (64309)
+        Flags: 0x00
+            0... .... = Reserved bit: Not set
+            .0.. .... = Don't fragment: Not set
+            ..0. .... = More fragments: Not set
+        ...0 0101 1100 1000 = Fragment Offset: 1480
+        Time to Live: 64
+        Protocol: ICMP (1)
+        Header Checksum: 0x6603 [validation disabled]
+        [Header checksum status: Unverified]
+        Source Address: 10.0.2.2
+        Destination Address: 10.0.1.2
+        [2 IPv4 Fragments (1980 bytes): #4(1480), #5(500)]
+            [Frame: 4, payload: 0-1479 (1480 bytes)]
+            [Frame: 5, payload: 1480-1979 (500 bytes)]
+            [Fragment count: 2]
+            [Reassembled IPv4 length: 1980]
+            [Reassembled IPv4 data: 00000da5001300018845196800000000d557080000000000101112131415161718191a1b…]
+    Internet Control Message Protocol
+        Type: 0 (Echo (ping) reply)
+        Code: 0
+        Checksum: 0x0da5 [correct]
+        [Checksum Status: Good]
+        Identifier (BE): 19 (0x0013)
+        Identifier (LE): 4864 (0x1300)
+        Sequence Number (BE): 1 (0x0001)
+        Sequence Number (LE): 256 (0x0100)
+        [Request frame: 3]
+        [Response time: 0.034 ms]
+        Timestamp from icmp data: May  5, 2025 16:11:04.000000000 PDT
+        [Timestamp from icmp data (relative): 0.547387097 seconds]
+        Data (1964 bytes)
+
+    Frame 6: 1514 bytes on wire (12112 bits), 1514 bytes captured (12112 bits) on interface eth2, id 0
+        Interface id: 0 (eth2)
+            Interface name: eth2
+        Encapsulation type: Ethernet (1)
+        Arrival Time: May  5, 2025 16:11:04.547933732 PDT
+        [Time shift for this packet: 0.000000000 seconds]
+        Epoch Time: 1746486664.547933732 seconds
+        [Time delta from previous captured frame: 0.000546635 seconds]
+        [Time delta from previous displayed frame: 0.000546635 seconds]
+        [Time since reference or first frame: 3.329004172 seconds]
+        Frame Number: 6
+        Frame Length: 1514 bytes (12112 bits)
+        Capture Length: 1514 bytes (12112 bits)
+        [Frame is marked: False]
+        [Frame is ignored: False]
+        [Protocols in frame: eth:ethertype:ip:data]
+    Ethernet II, Src: aa:c1:ab:75:ba:fa (aa:c1:ab:75:ba:fa), Dst: aa:c1:ab:7d:bb:26 (aa:c1:ab:7d:bb:26)
+        Destination: aa:c1:ab:7d:bb:26 (aa:c1:ab:7d:bb:26)
+            Address: aa:c1:ab:7d:bb:26 (aa:c1:ab:7d:bb:26)
+            .... ..1. .... .... .... .... = LG bit: Locally administered address (this is NOT the factory default)
+            .... ...0 .... .... .... .... = IG bit: Individual address (unicast)
+        Source: aa:c1:ab:75:ba:fa (aa:c1:ab:75:ba:fa)
+            Address: aa:c1:ab:75:ba:fa (aa:c1:ab:75:ba:fa)
+            .... ..1. .... .... .... .... = LG bit: Locally administered address (this is NOT the factory default)
+            .... ...0 .... .... .... .... = IG bit: Individual address (unicast)
+        Type: IPv4 (0x0800)
+    Internet Protocol Version 4, Src: 10.0.1.2, Dst: 10.0.2.2
+        0100 .... = Version: 4
+        .... 0101 = Header Length: 20 bytes (5)
+        Differentiated Services Field: 0x00 (DSCP: CS0, ECN: Not-ECT)
+            0000 00.. = Differentiated Services Codepoint: Default (0)
+            .... ..00 = Explicit Congestion Notification: Not ECN-Capable Transport (0)
+        Total Length: 1500
+        Identification: 0x3587 (13703)
+        Flags: 0x20, More fragments
+            0... .... = Reserved bit: Not set
+            .0.. .... = Don't fragment: Not set
+            ..1. .... = More fragments: Set
+        ...0 0000 0000 0000 = Fragment Offset: 0
+        Time to Live: 63
+        Protocol: ICMP (1)
+        Header Checksum: 0x0997 [validation disabled]
+        [Header checksum status: Unverified]
+        Source Address: 10.0.1.2
+        Destination Address: 10.0.2.2
+    Data (1480 bytes)
+
+    Frame 7: 534 bytes on wire (4272 bits), 534 bytes captured (4272 bits) on interface eth2, id 0
+        Interface id: 0 (eth2)
+            Interface name: eth2
+        Encapsulation type: Ethernet (1)
+        Arrival Time: May  5, 2025 16:11:04.548036770 PDT
+        [Time shift for this packet: 0.000000000 seconds]
+        Epoch Time: 1746486664.548036770 seconds
+        [Time delta from previous captured frame: 0.000103038 seconds]
+        [Time delta from previous displayed frame: 0.000103038 seconds]
+        [Time since reference or first frame: 3.329107210 seconds]
+        Frame Number: 7
+        Frame Length: 534 bytes (4272 bits)
+        Capture Length: 534 bytes (4272 bits)
+        [Frame is marked: False]
+        [Frame is ignored: False]
+        [Protocols in frame: eth:ethertype:ip:icmp:data]
+    Ethernet II, Src: aa:c1:ab:75:ba:fa (aa:c1:ab:75:ba:fa), Dst: aa:c1:ab:7d:bb:26 (aa:c1:ab:7d:bb:26)
+        Destination: aa:c1:ab:7d:bb:26 (aa:c1:ab:7d:bb:26)
+            Address: aa:c1:ab:7d:bb:26 (aa:c1:ab:7d:bb:26)
+            .... ..1. .... .... .... .... = LG bit: Locally administered address (this is NOT the factory default)
+            .... ...0 .... .... .... .... = IG bit: Individual address (unicast)
+        Source: aa:c1:ab:75:ba:fa (aa:c1:ab:75:ba:fa)
+            Address: aa:c1:ab:75:ba:fa (aa:c1:ab:75:ba:fa)
+            .... ..1. .... .... .... .... = LG bit: Locally administered address (this is NOT the factory default)
+            .... ...0 .... .... .... .... = IG bit: Individual address (unicast)
+        Type: IPv4 (0x0800)
+    Internet Protocol Version 4, Src: 10.0.1.2, Dst: 10.0.2.2
+        0100 .... = Version: 4
+        .... 0101 = Header Length: 20 bytes (5)
+        Differentiated Services Field: 0x00 (DSCP: CS0, ECN: Not-ECT)
+            0000 00.. = Differentiated Services Codepoint: Default (0)
+            .... ..00 = Explicit Congestion Notification: Not ECN-Capable Transport (0)
+        Total Length: 520
+        Identification: 0x3587 (13703)
+        Flags: 0x00
+            0... .... = Reserved bit: Not set
+            .0.. .... = Don't fragment: Not set
+            ..0. .... = More fragments: Not set
+        ...0 0101 1100 1000 = Fragment Offset: 1480
+        Time to Live: 63
+        Protocol: ICMP (1)
+        Header Checksum: 0x2cb2 [validation disabled]
+        [Header checksum status: Unverified]
+        Source Address: 10.0.1.2
+        Destination Address: 10.0.2.2
+        [2 IPv4 Fragments (1980 bytes): #6(1480), #7(500)]
+            [Frame: 6, payload: 0-1479 (1480 bytes)]
+            [Frame: 7, payload: 1480-1979 (500 bytes)]
+            [Fragment count: 2]
+            [Reassembled IPv4 length: 1980]
+            [Reassembled IPv4 data: 08001ca0001300028845196800000000be5b080000000000101112131415161718191a1b…]
+    Internet Control Message Protocol
+        Type: 8 (Echo (ping) request)
+        Code: 0
+        Checksum: 0x1ca0 [correct]
+        [Checksum Status: Good]
+        Identifier (BE): 19 (0x0013)
+        Identifier (LE): 4864 (0x1300)
+        Sequence Number (BE): 2 (0x0002)
+        Sequence Number (LE): 512 (0x0200)
+        Timestamp from icmp data: May  5, 2025 16:11:04.000000000 PDT
+        [Timestamp from icmp data (relative): 0.548036770 seconds]
+        Data (1964 bytes)
+
+    Frame 8: 1514 bytes on wire (12112 bits), 1514 bytes captured (12112 bits) on interface eth2, id 0
+        Interface id: 0 (eth2)
+            Interface name: eth2
+        Encapsulation type: Ethernet (1)
+        Arrival Time: May  5, 2025 16:11:04.548054817 PDT
+        [Time shift for this packet: 0.000000000 seconds]
+        Epoch Time: 1746486664.548054817 seconds
+        [Time delta from previous captured frame: 0.000018047 seconds]
+        [Time delta from previous displayed frame: 0.000018047 seconds]
+        [Time since reference or first frame: 3.329125257 seconds]
+        Frame Number: 8
+        Frame Length: 1514 bytes (12112 bits)
+        Capture Length: 1514 bytes (12112 bits)
+        [Frame is marked: False]
+        [Frame is ignored: False]
+        [Protocols in frame: eth:ethertype:ip:data]
+    Ethernet II, Src: aa:c1:ab:7d:bb:26 (aa:c1:ab:7d:bb:26), Dst: aa:c1:ab:75:ba:fa (aa:c1:ab:75:ba:fa)
+        Destination: aa:c1:ab:75:ba:fa (aa:c1:ab:75:ba:fa)
+            Address: aa:c1:ab:75:ba:fa (aa:c1:ab:75:ba:fa)
+            .... ..1. .... .... .... .... = LG bit: Locally administered address (this is NOT the factory default)
+            .... ...0 .... .... .... .... = IG bit: Individual address (unicast)
+        Source: aa:c1:ab:7d:bb:26 (aa:c1:ab:7d:bb:26)
+            Address: aa:c1:ab:7d:bb:26 (aa:c1:ab:7d:bb:26)
+            .... ..1. .... .... .... .... = LG bit: Locally administered address (this is NOT the factory default)
+            .... ...0 .... .... .... .... = IG bit: Individual address (unicast)
+        Type: IPv4 (0x0800)
+    Internet Protocol Version 4, Src: 10.0.2.2, Dst: 10.0.1.2
+        0100 .... = Version: 4
+        .... 0101 = Header Length: 20 bytes (5)
+        Differentiated Services Field: 0x00 (DSCP: CS0, ECN: Not-ECT)
+            0000 00.. = Differentiated Services Codepoint: Default (0)
+            .... ..00 = Explicit Congestion Notification: Not ECN-Capable Transport (0)
+        Total Length: 1500
+        Identification: 0xfb36 (64310)
+        Flags: 0x20, More fragments
+            0... .... = Reserved bit: Not set
+            .0.. .... = Don't fragment: Not set
+            ..1. .... = More fragments: Set
+        ...0 0000 0000 0000 = Fragment Offset: 0
+        Time to Live: 64
+        Protocol: ICMP (1)
+        Header Checksum: 0x42e7 [validation disabled]
+        [Header checksum status: Unverified]
+        Source Address: 10.0.2.2
+        Destination Address: 10.0.1.2
+    Data (1480 bytes)
+
+    Frame 9: 534 bytes on wire (4272 bits), 534 bytes captured (4272 bits) on interface eth2, id 0
+        Interface id: 0 (eth2)
+            Interface name: eth2
+        Encapsulation type: Ethernet (1)
+        Arrival Time: May  5, 2025 16:11:04.548057482 PDT
+        [Time shift for this packet: 0.000000000 seconds]
+        Epoch Time: 1746486664.548057482 seconds
+        [Time delta from previous captured frame: 0.000002665 seconds]
+        [Time delta from previous displayed frame: 0.000002665 seconds]
+        [Time since reference or first frame: 3.329127922 seconds]
+        Frame Number: 9
+        Frame Length: 534 bytes (4272 bits)
+        Capture Length: 534 bytes (4272 bits)
+        [Frame is marked: False]
+        [Frame is ignored: False]
+        [Protocols in frame: eth:ethertype:ip:icmp:data]
+    Ethernet II, Src: aa:c1:ab:7d:bb:26 (aa:c1:ab:7d:bb:26), Dst: aa:c1:ab:75:ba:fa (aa:c1:ab:75:ba:fa)
+        Destination: aa:c1:ab:75:ba:fa (aa:c1:ab:75:ba:fa)
+            Address: aa:c1:ab:75:ba:fa (aa:c1:ab:75:ba:fa)
+            .... ..1. .... .... .... .... = LG bit: Locally administered address (this is NOT the factory default)
+            .... ...0 .... .... .... .... = IG bit: Individual address (unicast)
+        Source: aa:c1:ab:7d:bb:26 (aa:c1:ab:7d:bb:26)
+            Address: aa:c1:ab:7d:bb:26 (aa:c1:ab:7d:bb:26)
+            .... ..1. .... .... .... .... = LG bit: Locally administered address (this is NOT the factory default)
+            .... ...0 .... .... .... .... = IG bit: Individual address (unicast)
+        Type: IPv4 (0x0800)
+    Internet Protocol Version 4, Src: 10.0.2.2, Dst: 10.0.1.2
+        0100 .... = Version: 4
+        .... 0101 = Header Length: 20 bytes (5)
+        Differentiated Services Field: 0x00 (DSCP: CS0, ECN: Not-ECT)
+            0000 00.. = Differentiated Services Codepoint: Default (0)
+            .... ..00 = Explicit Congestion Notification: Not ECN-Capable Transport (0)
+        Total Length: 520
+        Identification: 0xfb36 (64310)
+        Flags: 0x00
+            0... .... = Reserved bit: Not set
+            .0.. .... = Don't fragment: Not set
+            ..0. .... = More fragments: Not set
+        ...0 0101 1100 1000 = Fragment Offset: 1480
+        Time to Live: 64
+        Protocol: ICMP (1)
+        Header Checksum: 0x6602 [validation disabled]
+        [Header checksum status: Unverified]
+        Source Address: 10.0.2.2
+        Destination Address: 10.0.1.2
+        [2 IPv4 Fragments (1980 bytes): #8(1480), #9(500)]
+            [Frame: 8, payload: 0-1479 (1480 bytes)]
+            [Frame: 9, payload: 1480-1979 (500 bytes)]
+            [Fragment count: 2]
+            [Reassembled IPv4 length: 1980]
+            [Reassembled IPv4 data: 000024a0001300028845196800000000be5b080000000000101112131415161718191a1b…]
+    Internet Control Message Protocol
+        Type: 0 (Echo (ping) reply)
+        Code: 0
+        Checksum: 0x24a0 [correct]
+        [Checksum Status: Good]
+        Identifier (BE): 19 (0x0013)
+        Identifier (LE): 4864 (0x1300)
+        Sequence Number (BE): 2 (0x0002)
+        Sequence Number (LE): 512 (0x0200)
+        [Request frame: 7]
+        [Response time: 0.021 ms]
+        Timestamp from icmp data: May  5, 2025 16:11:04.000000000 PDT
+        [Timestamp from icmp data (relative): 0.548057482 seconds]
+        Data (1964 bytes)
+    ```
+  </TabItem>
+</Tabs>
+#### Closer look to the ICMP messages
+Using the tshark captures for 1 ping we can see we received 2 packets as per the following snipets (removed fileds that are not relevant):
+```bash title="First fragment"
+Internet Protocol Version 4, Src: 10.0.1.2, Dst: 10.0.2.2
+    Identification: 0x3586 (13702)
+    Flags: 0x20, More fragments
+        0... .... = Reserved bit: Not set
+        .0.. .... = Don't fragment: Not set
+        ..1. .... = More fragments: Set
+    ...0 0000 0000 0000 = Fragment Offset: 0
+```
+```bash title="Second fragment"
+Internet Protocol Version 4, Src: 10.0.1.2, Dst: 10.0.2.2
+    Identification: 0x3586 (13702)
+    Flags: 0x00
+        0... .... = Reserved bit: Not set
+        .0.. .... = Don't fragment: Not set
+        ..0. .... = More fragments: Not set
+    ...0 0101 1100 1000 = Fragment Offset: 1480
+    [2 IPv4 Fragments (1980 bytes): #2(1480), #3(500)]
+        [Frame: 2, payload: 0-1479 (1480 bytes)]
+        [Frame: 3, payload: 1480-1979 (500 bytes)]
+        [Fragment count: 2]
+        [Reassembled IPv4 length: 1980]
+        [Reassembled IPv4 data: 080005a5001300018845196800000000d557080000000000101112131415161718191a1b…]
+Internet Control Message Protocol
+    Type: 8 (Echo (ping) request)
+    Code: 0
+    Checksum: 0x05a5 [correct]
+    [Checksum Status: Good]
+    Identifier (BE): 19 (0x0013)
+    Identifier (LE): 4864 (0x1300)
+    Sequence Number (BE): 1 (0x0001)
+    Sequence Number (LE): 256 (0x0100)
+    Timestamp from icmp data: May  5, 2025 16:11:04.000000000 PDT
+    [Timestamp from icmp data (relative): 0.547352848 seconds]
+    Data (1964 bytes)
+```
+The following are the fields to look for:
+- **Identification**: For both packets it is set to the same value (0x3586) which means that they are part of the same packet.
+- **Flags**: The first packet has the "More fragments" flag set to 1 which means that there are more fragments to come. The second packet has the "More fragments" flag set to 0 which means that this is the last fragment.
+- **Fragment Offset**: The first packet has the fragment offset set to 0 which means that this is the first fragment. The second packet has the fragment offset set to 1480 which means that that 1480 bytes have already been transmitted.
+
+:::note
+Tshark shows the details about the fragments in the "Reassembled IPv4" section. That is calculated based on the "Identification" and "Fragment Offset" fields.
+:::
 ## Path MTU discovery
 
 Path MTU discovery is a technique used to determine the maximum transmission unit (MTU) of the path to the destination.
@@ -240,3 +957,15 @@ This option can be used if the network does not filter the ICMP messages.
 The sender sets the DF (Don't Fragment) flag to 1 and sends a packet to the destination. If the packet is too large to be transmitted over the network, the sender will reduce the size of the packet and try again until it is transmitted successfully.
 
 This case is used when the network filters the ICMP messages so then if there is no response we assume that the packet is too large and we need to reduce the size of the packet.
+
+### Example ICMP message too big
+The followinfg is a ping from r1 to r3 that fails
+```bash
+r1#ping 10.0.2.2 size 2000 df-bit repeat 1
+PING 10.0.2.2 (10.0.2.2) 1972(2000) bytes of data.
+ping: local error: message too long, mtu=1500
+
+--- 10.0.2.2 ping statistics ---
+1 packets transmitted, 0 received, +1 errors, 100% packet loss, time 0ms
+```
+The packet is sent with the DF bit set to 1 so fragmentations is not allowed. The system itself responds with the message "message too long, mtu=1500" which means that the packet is too large to be transmitted over the network and the MTU of the path is 1500 bytes.
