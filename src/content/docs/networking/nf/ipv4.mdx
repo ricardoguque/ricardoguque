@@ -1,0 +1,242 @@
+---
+title: IPv4
+description: Internet Protocol Version 4
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+IP (Internet Protocol) is a common protocol used in the TCP/IP suit. All applications that need to communicate over the internet will use IP to encapsulate the application data. It is a best effort protocol because it does not guarantee the delivery of the data. It is a connectionless protocol because it does not establish a connection before sending the data. Instead it will rely on the transport layer to establish a connection if needed.
+
+## IP Header
+
+The following are in the fields in the IP header:
+```
+0               1               2               3               4
+0 1 2 3 4 5 6 7 8 1 2 3 4 5 6 7 8 1 2 3 4 5 6 7 8 1 2 3 4 5 6 7 8
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|Version|  IHL  |Type of Service|          Total Length         |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|         Identification        |Flags|      Fragment Offset    |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|  Time to Live |    Protocol   |         Header Checksum       |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                       Source Address                          |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                    Destination Address                        |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|          Options (variable lenght)            |    Padding    |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                    Data (variable lenght)                     |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+```
+- **Options** (variable length, up to 40 bytes): Optional fields for additional information.
+- **Data** (variable length): The actual data being transmitted.
+
+### Version (4 bits)
+The version field is used to identify the version of the IP protocol being used. The most common versions are IPv4 and IPv6.
+
+### IHL (Internet Header Length) (4 bits)
+The IHL field is used to specify the length of the IP header. 
+
+The importance of this filed is to know where the data starts since the header can be variable length due to the options field.
+
+### Type of Service (8 bits)
+The Type of Service (ToS) field is used to specify the quality of service for the IP packet. It is divided into two parts: the Differentiated Services Field (DSF) and the Explicit Congestion Notification (ECN).
+
+The DSF part is used by routers to determine how to prioritize the packets that traverse the network. The ECN part is used by the sender and receiver to indicate congestion in the network.
+
+### Total Length (16 bits)
+
+The Total Length field is used to specify the total length of the IP packet, including the header and data. 
+
+This field is usefull to know where the data ends, and this requires the IHL field to know where the data starts.
+
+### Identification (16 bits)
+
+This is a unique identifier for the IP packet done by the host that is sending the packet. This field is used to identify the fragments of the same IP packet when they are sent over the network which will have the same identification number.
+
+### Flags (3 bits)
+
+By seting each of the 3 bits to 1 or 0 we can get the following infromation from this filed:
+- 000: Reserved, it is always set to 0.
+- 010: Don't Fragment (DF) flag is set, which means that the packet should not be fragmented.
+- 001: More Fragments (MF) flag is set, which means that there are more fragments to come. 
+
+### Fragment Offset (13 bits)
+
+This field is used to specify up to which byte of the original IP packet the new fragment starts. This field is used to reassemble the original IP packet at the destination host.
+
+The fragment offset of the first fragment is always set to 0. The fragment offset of the second fragment is set to the size of the first fragment, and so on.
+
+### TTL (Time to Live) (8 bits)
+The TTL field is used to specify the maximum number of hops that the IP packet can take before it is discarded. This field is used to prevent the IP packet from circulating indefinitely in the network.
+
+The TTL field is decremented by 1 at each hop. If the TTL field reaches 0, the IP packet is discarded and an ICMP Time Exceeded message is sent back to the sender.
+
+### Protocol (8 bits)
+
+The Protocol field is used to specify the protocol used in the transport layer. This is used by the receiver to determine how to process the data in the IP packet. Also that can be used by firewalls to filter the packets based on the protocol used.
+
+The following are some of the most common protocols:
+- **TCP (6)**: Transmission Control Protocol
+- **UDP (17)**: User Datagram Protocol
+- **ICMP (1)**: Internet Control Message Protocol
+- **IGMP (2)**: Internet Group Management Protocol
+- **GRE (47)**: Generic Routing Encapsulation
+- **ESP (50)**: Encapsulating Security Payload
+- **AH (51)**: Authentication Header
+- **OSPF (89)**: Open Shortest Path First
+
+### Header Checksum (16 bits)
+The Header Checksum field is used to verify the integrity of the IP header.
+
+When the IP packet is received, the receiver calculates the checksum again and compares it with the value in the Header Checksum field. If they do not match, it means that the IP header has been corrupted and the packet is discarded.
+
+Steps to calculate the checksum for the IP header example `45 00 00 3c 1c 46 40 00 40 06 b1 e6 c0 a8 00 68 c0 a8 00 01` (cibsiudering a simple header without options):
+
+<Steps>
+
+1. **Set the Checksum Field to Zero**: Before calculating the checksum, set the checksum field in the header to zero.
+
+2. **Divide the Header into 16-bit Words**: The IP header is divided into 16-bit words. If the header length is not a multiple of 16 bits, it is padded with zeros.
+
+    In our example, the header is divided into the following 16-bit words:
+    ```
+    4500 003c 1c46 4000 4006 b1e6 c0a8 0068 c0a8 0001
+    ```
+3. **Sum the 16-bit Words**: Add all the 16-bit words together. If the sum exceeds 16 bits, the overflow is added back to the sum.
+
+    In our example to make it easier to read we will convert the hex values to decimal:
+
+    | Hexadecimal | Decimal |
+    |-------------|---------|
+    | 4500        | 17664   |
+    | 003c        | 60      |
+    | 1c46        | 7238    |
+    | 4000        | 16384   |
+    | 4006        | 16390   |
+    | b1e6        | 45542   |
+    | c0a8        | 49320   |
+    | 0068        | 104     |
+    | c0a8        | 49320   |
+    | 0001        | 1       |
+    | **Sum**     | **202023**  |
+
+    Then ther sum is: 202023 which is 31527 in HEX so we need handle the overflow which in this case is `3`
+
+4. **Add the Overflow**: If the sum exceeds 16 bits, add the overflow back to the sum. 
+
+    Now we have the following 2 numbers to sum:
+    | Hexadecimal | Decimal |
+    |-------------|---------|
+    | 1527        | 5479    |
+    | 3           | 3       |
+    | **Sum**     | **1530**  |
+
+    The sum is 1530 which is 0x152A in hex and this is 16 bits so we can move to next step
+
+5. **Convert the Sum to One's Complement**: The checksum is the one's complement of the sum. 
+
+    To calculate the one's complement, we need to invert all the bits in the sum. Lets convert the sum to binary so it is easier to cisualize it:
+    | Hexadecimal | Decimal | Binary          |
+    |-------------|---------|-----------------|
+    | 0x152A        | 1530    | 0001010100101010 |
+
+    The `One's Complement` is done by inverting all the bits, so then the checksum is:
+    | Hexadecimal | Decimal | Binary      |
+    |-----------------|-------------|-----------------|
+    | **0xEAD5**       | 60533   | 1110101011010101 |
+
+</Steps>
+
+### Source Address (32 bits)
+The Source Address field is used to specify the IP address of the sender. This field is used by the receiver to determine where the IP packet came from so then it can send the response back to the sender.
+
+:::note
+This filed can be change while in transit if used NAT (Network Address Translation).
+:::
+### Destination Address (32 bits)
+The Destination Address field is used to specify the IP address of the receiver. This field is used by the routers to determine where to send the IP packet.
+:::note
+Different than the source address, this field should not be changed while in transit.
+:::
+### Options (variable length)
+
+This options are not commonly used, but they can be used to specify additional information about the IP packet which is considered a security risk.
+
+### Padding (variable length)
+The Padding field is used to ensure that the IP header is a multiple of 32 bits then this is needed when the options field is used. The padding is done by adding zeros to the end of the header.
+
+## IP fragmentation
+
+IP fragmentation is the process of breaking down an IP packet into smaller fragments to fit into the maximum transmission unit (MTU) of the network. This is done when the IP packet is too large to be transmitted over the network.
+
+### IP Fragmentation drawbacks
+
+- **Increased overhead**: Fragmentation adds overhead to the IP packet, which can reduce the overall performance of the network. Each fragment has its own header, which increases the size of the packet.
+- **Increased latency**: Fragmentation can increase the latency of the network, as each fragment must be transmitted separately and reassembled at the destination. This can cause delays in the delivery of the IP packet.
+- **Increased complexity**: Fragmentation can increase the complexity of the network, as it requires additional processing to reassemble the fragments at the destination. This can increase the load on the routers and switches in the network.
+- **Increased risk of packet loss**: Fragmentation can increase the risk of packet loss, as each fragment must be transmitted separately. If one fragment is lost, the entire IP packet must be retransmitted, which can cause delays in the delivery of the data.
+- **Loos of TCP/UDP headers**: If the IP packet is fragmented, the TCP or UDP headers will be present on the first fragment only and if the is filtering based on it it will be working only for the first fragment. 
+- **Different paths when ECMP**: Since the Application layer header will not be present on most of the fragments then the load balancing algorithms used by the routers will not be able to use the same path for all the fragments.
+
+### IP Fragmentation process
+
+The following is a step by step about how the IP fragmentation works
+<Steps>
+1. **Packet creation**: 
+
+    The sender creates an IP packet with a size which has a size larger that the MTU on a interface of the path to the destination. For example, the MTU is 1500 bytes and the IP packet is 2000 bytes.
+
+    :::note
+    The sender will set the DF (Don't Fragment) flag to 0, which means that the packet can be fragmented.
+    :::
+
+2. **Fragmentation decision**: 
+
+    The packets is send to the network and a router in the path with a MTU smaller than the size of the packet will see that the DF flag is set to 0 and will start the fragmentation process. 
+
+3. **Fragmentation process (first fragment)**: 
+
+    The router will break the data from the original IP packet into smaller fragments that fit into the MTU of the interface and it will do the folowing to the header of the first fragment:
+    - Set the Identification field to the same value as the original IP packet.
+    - Set the Flags field to 001 to signal that there are more fragments to come. 
+    - Set the Fragment Offset field to 0, since this is the first fragment.
+
+4. **Fragmentation process (subsequent fragments)**:
+    The difference with the first fragment is that the router will set the Fragment Offset field to the size of the previous fragment
+
+5. **Fragmentation process (last fragment)**:
+    The router will set the Flags field to 000 to signal that this is the last fragment. The Fragment Offset field will be set to the size of the previous fragment.
+
+6. **Fragment transmission**:
+    The router will transmit the fragments to the next hop in the network. Each fragment will be transmitted separately and will have its own IP header.
+
+    :::note
+    If in the next hop the MTU is smaller that the fragment size then the router will repeat the fragmentation process.
+    :::
+7. **Fragment reassembly**:
+    The destination host will receive the fragments and will reassemble them into the original IP packet. The reassembly process is done by using the Identification field to identify the fragments that belong to the same IP packet and the Fragment Offset field to determine the order of the fragments.
+
+
+</Steps>
+
+:::note
+The fragmentation process is done by the routers in the path to the destination. The sender and receiver do not need to be aware of the fragmentation process.
+:::
+
+## Path MTU discovery
+
+Path MTU discovery is a technique used to determine the maximum transmission unit (MTU) of the path to the destination.
+
+This can be done on 2 ways
+### Using the MTU from the ICMP Packet Too Big message
+The sender sets the DF (Don't Fragment) flag to 1 and sends a packet to the destination. If the packet is too large to be transmitted over the network, the router will send an ICMP Packet Too Big message back to the sender with the MTU of the path. The sender can then adjust the size of the packet to fit into the MTU of the path.
+
+This option can be used if the network does not filter the ICMP messages.
+
+### Adjust to a smaller MTU until the packet is transmitted
+
+The sender sets the DF (Don't Fragment) flag to 1 and sends a packet to the destination. If the packet is too large to be transmitted over the network, the sender will reduce the size of the packet and try again until it is transmitted successfully.
+
+This case is used when the network filters the ICMP messages so then if there is no response we assume that the packet is too large and we need to reduce the size of the packet.
