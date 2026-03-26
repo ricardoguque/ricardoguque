@@ -1,4 +1,0 @@
----
-title: BGP
-description: BGP
----

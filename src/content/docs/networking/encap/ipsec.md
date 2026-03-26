@@ -1,4 +1,0 @@
----
-title: IPsec
-description: IPsec
----

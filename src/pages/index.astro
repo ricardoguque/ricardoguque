@@ -1,0 +1,170 @@
+---
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
+    <title>Ricardo Gutierrez Quezada</title>
+  </head>
+  <body class="bg-black text-slate-200 font-sans leading-relaxed relative overflow-x-hidden">
+    <div class="animated-bg"></div>
+    <main class="max-w-5xl mx-auto px-6 py-10 relative z-10">
+
+  <!-- Header -->
+  <header class="text-center mb-12">
+    <img src={`${base}yo.jpg`} alt="Ricardo Gutierrez Quezada" class="w-36 h-36 rounded-full object-cover mx-auto mb-4" />
+    <h1 class="text-3xl font-bold">Ricardo Gutierrez Quezada</h1>
+    <p class="text-lg text-slate-400 mt-1">Network Engineer having fun with network automation</p>
+    <nav class="flex gap-6 justify-center mt-4">
+      <a href="https://github.com/ricardoguque" class="text-blue-400 hover:underline">GitHub</a>
+      <a href="https://www.linkedin.com/in/ricardo-gutierrez-b3446475/" class="text-blue-400 hover:underline">LinkedIn</a>
+    </nav>
+  </header>
+
+  <!-- About -->
+  <section class="mb-10">
+    <h2 class="text-xl font-semibold pb-2 mb-4 border-b border-slate-700">👨‍💻 About me</h2>
+    <div class="space-y-3 text-slate-400">
+      <p>Experienced Network Engineer with a proven track record since 2012 in managing and optimizing large-scale network environments, including Service Providers and Cloud Providers. I specialize in the deployment of complex networking solutions and leading technical teams across expansive regions.</p>
+      <p>I have also experienced doing Linux networking by using commodity hardware where a <a href="https://dent.dev/" class="text-blue-400 hover:underline">DentOS</a> image was loaded and I had to design, deploy, and troubleshoot interacting with the Linux terminal and the network applications like FRR, iptables, keepalive, dhcp, strongswan, and in-house agents to interact with the ZTP and CI/CD tooling.</p>
+      <p>While working with cloud providers, I have expanded my skills to network automation where I leverage technologies like Git, Python, APIs, Linux, CI/CD, and DevOps practices to streamline and enhance network operations.</p>
+      <p>Beyond my core networking skills, I'm deeply passionate about exploring the synergy between network automation and web development. Specifically, working on an idea to develop a Network as a Code project using Pydantic and presenting the data with Astro JS.</p>
+    </div>
+  </section>
+
+  <!-- Professional Experience -->
+  <section class="mb-10">
+    <h2 class="text-xl font-semibold pb-2 mb-4 border-b border-slate-700">📚 Professional Experience</h2>
+    <div class="space-y-3">
+
+      <div class="flex gap-6 items-center p-4 bg-slate-900/80 border border-slate-800 rounded-lg">
+        <img src={`${base}microsoft.jpg`} alt="Microsoft" class="w-24 h-24 object-contain shrink-0" />
+        <div>
+          <h3 class="font-semibold">Senior Cloud Network Engineer at Microsoft</h3>
+          <span class="text-sm text-slate-400">Feb 2025 – Present</span>
+          <p class="text-sm text-slate-400 mt-2">I am part of the Azure WAN IP engineering team that onboards new hardware or design used to build/improve the backbone network for Azure Cloud services. The activities include onboarding new devices, line cards, or code to the network by doing the required tests to ensure seamless integration with the production network.</p>
+        </div>
+      </div>
+
+      <div class="flex gap-6 items-center p-4 bg-slate-900/80 border border-slate-800 rounded-lg">
+        <img src={`${base}aws.jpg`} alt="AWS" class="w-24 h-24 object-contain shrink-0" />
+        <div>
+          <h3 class="font-semibold">Network Development Engineer at AWS</h3>
+          <span class="text-sm text-slate-400">Jan 2020 – Feb 2025</span>
+          <ul class="text-sm text-slate-400 mt-2 list-disc pl-5 space-y-2">
+            <li><strong>Amazon Just Walk Out stores</strong>: Evaluating customer needs, designing feature implementations, and ensuring seamless integration with systems that manage configuration updates. Enhanced coding and automation skills in Python.</li>
+            <li><strong>AWS DX deployment Team</strong>: Facilitated new DX customer connections deploying routing and switching devices (Juniper/Cisco) using AWS automation tools and Change Management processes.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="flex gap-6 items-center p-4 bg-slate-900/80 border border-slate-800 rounded-lg">
+        <img src={`${base}cisco.jpg`} alt="Cisco" class="w-24 h-24 object-contain shrink-0" />
+        <div>
+          <h3 class="font-semibold">Network Engineer at Cisco (Contractor Layer2)</h3>
+          <span class="text-sm text-slate-400">Oct 2018 – Dec 2019</span>
+          <p class="text-sm text-slate-400 mt-2">Built a green field MPLS Network for a big financial firm using Cisco ASR9K and ASR1K devices. Gained experience with Python automation, Segment Routing, and MACsec.</p>
+        </div>
+      </div>
+
+      <div class="flex gap-6 items-center p-4 bg-slate-900/80 border border-slate-800 rounded-lg">
+        <img src={`${base}cisco.jpg`} alt="Cisco" class="w-24 h-24 object-contain shrink-0" />
+        <div>
+          <h3 class="font-semibold">Network Engineer at Cisco (Contractor TMP)</h3>
+          <span class="text-sm text-slate-400">Mar 2016 – Oct 2018</span>
+          <p class="text-sm text-slate-400 mt-2">Onsite Engineer for a large Service Provider in Mexico. Learned Service Provider platforms (ASR9K) and Data Center platforms (Nexus9000) with OSPF, BGP, PIM, IGMP, MPLS L3VPN/L2VPN, Multicast VPNs.</p>
+        </div>
+      </div>
+
+      <div class="flex gap-6 items-center p-4 bg-slate-900/80 border border-slate-800 rounded-lg">
+        <img src={`${base}produban.jpg`} alt="Produban" class="w-24 h-24 object-contain shrink-0" />
+        <div>
+          <h3 class="font-semibold">Network Engineer at Produban (Santander bank)</h3>
+          <span class="text-sm text-slate-400">Oct 2015 – Mar 2016</span>
+          <p class="text-sm text-slate-400 mt-2">Deployment activities for bank Data Centers using Juniper and Cisco with MPLS, LDP, BGP, OSPF, EIGRP, HSRP, STP, LACP.</p>
+        </div>
+      </div>
+
+      <div class="flex gap-6 items-center p-4 bg-slate-900/80 border border-slate-800 rounded-lg">
+        <img src={`${base}megacable.jpg`} alt="Megacable" class="w-24 h-24 object-contain shrink-0" />
+        <div>
+          <h3 class="font-semibold">Network Engineer at Megacable</h3>
+          <span class="text-sm text-slate-400">Jan 2013 – Oct 2015</span>
+          <p class="text-sm text-slate-400 mt-2">Deployment for enterprise services based on L2VPNs and L3VPN. Part of the engineering team testing new platforms for new services.</p>
+        </div>
+      </div>
+
+      <div class="flex gap-6 items-center p-4 bg-slate-900/80 border border-slate-800 rounded-lg">
+        <img src={`${base}hemac.png`} alt="HEMAC" class="w-24 h-24 object-contain shrink-0" />
+        <div>
+          <h3 class="font-semibold">Wireless Design Engineer at HEMAC</h3>
+          <span class="text-sm text-slate-400">Jan 2011 – Jan 2013</span>
+          <p class="text-sm text-slate-400 mt-2">Development of microwave path studies to Mexican mobile operators (Alestra and Telcel). Government project to connect state offices, educational and health buildings.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Teaching -->
+  <section class="mb-10">
+    <h2 class="text-xl font-semibold pb-2 mb-4 border-b border-slate-700">🏫 Teaching Experience</h2>
+    <p class="text-slate-400"><strong>Networking teacher</strong> at UVM and UAG (Mexican private universities) imparting Network 3 and Network 4 for the Cisco Network Academy.</p>
+  </section>
+
+  <!-- Education -->
+  <section class="mb-10">
+    <h2 class="text-xl font-semibold pb-2 mb-4 border-b border-slate-700">🎓 Education</h2>
+    <div class="flex gap-6 items-center p-4 bg-slate-900/80 border border-slate-800 rounded-lg">
+      <img src={`${base}udg_cucei.png`} alt="UDG" class="w-24 object-contain shrink-0" />
+      <div>
+        <h3 class="font-semibold">Bachelor's degree in Communications and Electronics Engineering</h3>
+        <span class="text-sm text-slate-400">Guadalajara's University (2006–2010)</span>
+      </div>
+    </div>
+  </section>
+
+    </main>
+    <footer class="text-center py-8 text-sm text-slate-500 border-t border-slate-800 relative z-10">
+      <p>&copy; {new Date().getFullYear()} Ricardo Gutierrez Quezada</p>
+    </footer>
+  </body>
+</html>
+
+<style is:global>
+  .animated-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background:
+      radial-gradient(ellipse 600px 600px at 10% 20%, rgba(59, 130, 246, 0.06), transparent),
+      radial-gradient(ellipse 500px 500px at 80% 60%, rgba(139, 92, 246, 0.06), transparent),
+      radial-gradient(ellipse 400px 400px at 50% 90%, rgba(6, 182, 212, 0.05), transparent);
+    animation: drift 20s ease-in-out infinite alternate;
+  }
+
+  @keyframes drift {
+    0% {
+      background:
+        radial-gradient(ellipse 600px 600px at 10% 20%, rgba(59, 130, 246, 0.06), transparent),
+        radial-gradient(ellipse 500px 500px at 80% 60%, rgba(139, 92, 246, 0.06), transparent),
+        radial-gradient(ellipse 400px 400px at 50% 90%, rgba(6, 182, 212, 0.05), transparent);
+    }
+    50% {
+      background:
+        radial-gradient(ellipse 700px 700px at 30% 70%, rgba(59, 130, 246, 0.07), transparent),
+        radial-gradient(ellipse 600px 600px at 70% 20%, rgba(139, 92, 246, 0.05), transparent),
+        radial-gradient(ellipse 500px 500px at 20% 40%, rgba(6, 182, 212, 0.06), transparent);
+    }
+    100% {
+      background:
+        radial-gradient(ellipse 500px 500px at 80% 30%, rgba(59, 130, 246, 0.05), transparent),
+        radial-gradient(ellipse 600px 600px at 20% 80%, rgba(139, 92, 246, 0.07), transparent),
+        radial-gradient(ellipse 700px 700px at 60% 50%, rgba(6, 182, 212, 0.06), transparent);
+    }
+  }
+</style>
