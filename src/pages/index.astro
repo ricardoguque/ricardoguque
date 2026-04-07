@@ -31,8 +31,8 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
     <div class="space-y-3 text-slate-400">
       <p>Experienced Network Engineer with a proven track record since 2011 in managing and optimizing large-scale network environments, including Service Providers, Cloud Providers, and enterprise networks. I hold a <strong>CCIE Service Provider</strong> certification and specialize in the deployment of complex networking solutions, network automation, and leading technical projects across regions.</p>
       <p>Currently at Microsoft Azure, I work on WAN infrastructure supporting exponential traffic growth, focusing on network automation, platform onboarding, and operational excellence. Previously at AWS, I led a large-scale customer migration of ~20,000 Direct Connect ports and was part of the Amazon Go (Just Walk Out) team, where I designed and deployed networks using commodity hardware running Linux-based software with applications like FRR, iptables, keepalived, DHCP, strongSwan, and in-house agents integrated with ZTP and CI/CD pipelines.</p>
-      <p>Throughout my career I have expanded my skills to network automation, leveraging technologies like Git, Python, Jinja2, APIs, Linux, CI/CD, and DevOps practices to streamline and enhance network operations — from building automation workflows for customer migrations to improving deployment tooling.</p>
-      <p>Beyond my core networking skills, I'm deeply passionate about exploring the synergy between network automation and web development. Specifically, working on an idea to develop a Network as a Code project using Pydantic and presenting the data with Astro JS.</p>
+      <p>Throughout my career, I have expanded my skills in network automation, leveraging technologies like Git, Python, Jinja2, APIs, Linux, CI/CD, and DevOps practices to streamline and enhance network operations — from building automation workflows for customer migrations to improving deployment tooling.</p>
+      <p>Beyond my core networking skills, I'm deeply passionate about exploring the synergy between network automation and web development. I'm currently working on developing a Network as Code project using Pydantic and presenting the data with Astro JS.</p>
     </div>
   </section>
 
@@ -72,7 +72,7 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
       <div class="flex gap-6 items-start p-4 bg-slate-900/80 border border-slate-800 rounded-lg">
         <img src={`${base}aws.jpg`} alt="AWS" class="w-24 h-24 object-contain shrink-0 mt-1" />
         <div>
-          <h3 class="font-semibold">Network Development Engineer at AWS (Contractor Collabera)</h3>
+          <h3 class="font-semibold">Network Development Engineer at AWS (Collabera Contractor)</h3>
           <span class="text-sm text-slate-400">Jan 06, 2020 – Dec 04, 2020</span>
           <ul class="text-sm text-slate-400 mt-2 list-disc pl-5 space-y-2">
             <li><strong>100G Deployments</strong>: Deployed hardware for 100G connections on the AWS Direct Connect service. Worked with automation tools being developed to speed up deployments, providing feedback and submitting code updates for review. Platforms used were Juniper MX devices running Junos OS.</li>
@@ -119,9 +119,9 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
           <span class="text-sm text-slate-400">Oct 19, 2015 – Mar 11, 2016</span>
           <ul class="text-sm text-slate-400 mt-2 list-disc pl-5 space-y-2">
             <li>Used change management processes for deployment activities including new connections, ACL updates, routing policy updates, and migrations.</li>
-            <li>Participated in a project to define new device connectivity for a planned data center presence in Dallas, US, collaborating with teams across areas and remote personnel.</li>
+            <li>Participated in a project to define new device connectivity for a planned data center presence in Dallas, US, collaborating with cross-functional teams and remote personnel.</li>
             <li>Worked on breaking a Layer 2 domain into a Layer 3 domain to reduce loops on older Cisco Nexus devices, requiring careful planning to avoid service disruption.</li>
-            <li>Migrated services from a Juniper EX chassis device and coordinated its decommission.</li>
+            <li>Migrated services from a Juniper EX chassis device and coordinated its decommissioning.</li>
           </ul>
         </div>
       </div>
@@ -144,7 +144,7 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
           <h3 class="font-semibold">Wireless Design Engineer at HEMAC Teleinformatica</h3>
           <span class="text-sm text-slate-400">Jan 03, 2011 – Jan 04, 2013</span>
           <ul class="text-sm text-slate-400 mt-2 list-disc pl-5 space-y-2">
-            <li>Performed line-of-sight (LOS) studies to determine wireless link feasibility between remote locations, defining antenna type, frequency, and power to support requested bandwidth.</li>
+            <li>Performed line-of-sight (LOS) studies to determine wireless link feasibility between remote locations, defining antenna type, frequency, and power to support the requested bandwidth.</li>
             <li>Performed coverage analysis for a government project connecting hospitals, schools, universities, and public spaces with free Wi-Fi using a point-to-multipoint WiMAX network.</li>
             <li>Installed wireless antennas and Cisco routers to provide network connectivity to government sites.</li>
           </ul>
@@ -157,17 +157,13 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
   <!-- Teaching -->
   <section class="mb-10">
     <h2 class="text-xl font-semibold pb-2 mb-4 border-b border-slate-700">🏫 Teaching Experience</h2>
-    <div class="space-y-3">
-      <div class="p-4 bg-slate-900/80 border border-slate-800 rounded-lg">
-        <h3 class="font-semibold">Networking Teacher — Universidad Autónoma de Guadalajara (UAG)</h3>
-        <span class="text-sm text-slate-400">May 2019 – Sep 2019</span>
-        <p class="text-sm text-slate-400 mt-2">Taught the final Cisco Networking Academy module focused on routing protocols. Classes included a theoretical component with primary focus on hands-on work using physical network devices in the school laboratory.</p>
-      </div>
-      <div class="p-4 bg-slate-900/80 border border-slate-800 rounded-lg">
-        <h3 class="font-semibold">Networking Teacher — Universidad del Valle de México (UVM)</h3>
-        <span class="text-sm text-slate-400">Aug 2017 – May 2019</span>
-        <p class="text-sm text-slate-400 mt-2">Taught the final Cisco Networking Academy module focused on routing protocols. Classes included a theoretical component with primary focus on hands-on work using physical network devices in the school laboratory.</p>
-      </div>
+    <div class="p-4 bg-slate-900/80 border border-slate-800 rounded-lg">
+      <h3 class="font-semibold">Networking Teacher</h3>
+      <ul class="text-sm text-slate-400 mt-1 list-disc pl-5">
+        <li><strong>Universidad Autónoma de Guadalajara (UAG)</strong> — May 2019 – Sep 2019</li>
+        <li><strong>Universidad del Valle de México (UVM)</strong> — Aug 2017 – May 2019</li>
+      </ul>
+      <p class="text-sm text-slate-400 mt-3">Taught the CCNA Module 4 — <strong>Connecting Networks</strong> from the Cisco Networking Academy program. Topics covered included WAN technologies, PPP/PPPoE, GRE tunnels, site-to-site and remote access VPNs, QoS fundamentals, and introduction to SDN and network programmability. All laboratory exercises were performed on <strong>physical network equipment</strong> available in the university lab.</p>
     </div>
   </section>
 
