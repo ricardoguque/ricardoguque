@@ -29,9 +29,9 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
   <section class="mb-10">
     <h2 class="text-xl font-semibold pb-2 mb-4 border-b border-slate-700">👨‍💻 About me</h2>
     <div class="space-y-3 text-slate-400">
-      <p>Experienced Network Engineer with a proven track record since 2012 in managing and optimizing large-scale network environments, including Service Providers and Cloud Providers. I specialize in the deployment of complex networking solutions and leading technical teams across expansive regions.</p>
-      <p>I have also experienced doing Linux networking by using commodity hardware where a <a href="https://dent.dev/" class="text-blue-400 hover:underline">DentOS</a> image was loaded and I had to design, deploy, and troubleshoot interacting with the Linux terminal and the network applications like FRR, iptables, keepalive, dhcp, strongswan, and in-house agents to interact with the ZTP and CI/CD tooling.</p>
-      <p>While working with cloud providers, I have expanded my skills to network automation where I leverage technologies like Git, Python, APIs, Linux, CI/CD, and DevOps practices to streamline and enhance network operations.</p>
+      <p>Experienced Network Engineer with a proven track record since 2011 in managing and optimizing large-scale network environments, including Service Providers, Cloud Providers, and enterprise networks. I hold a <strong>CCIE Service Provider</strong> certification and specialize in the deployment of complex networking solutions, network automation, and leading technical projects across regions.</p>
+      <p>Currently at Microsoft Azure, I work on WAN infrastructure supporting exponential traffic growth, focusing on network automation, platform onboarding, and operational excellence. Previously at AWS, I led a large-scale customer migration of ~20,000 Direct Connect ports and was part of the Amazon Go (Just Walk Out) team, where I designed and deployed networks using commodity hardware running Linux-based software with applications like FRR, iptables, keepalived, DHCP, strongSwan, and in-house agents integrated with ZTP and CI/CD pipelines.</p>
+      <p>Throughout my career I have expanded my skills to network automation, leveraging technologies like Git, Python, Jinja2, APIs, Linux, CI/CD, and DevOps practices to streamline and enhance network operations — from building automation workflows for customer migrations to improving deployment tooling.</p>
       <p>Beyond my core networking skills, I'm deeply passionate about exploring the synergy between network automation and web development. Specifically, working on an idea to develop a Network as a Code project using Pydantic and presenting the data with Astro JS.</p>
     </div>
   </section>
@@ -41,69 +41,113 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
     <h2 class="text-xl font-semibold pb-2 mb-4 border-b border-slate-700">📚 Professional Experience</h2>
     <div class="space-y-3">
 
-      <div class="flex gap-6 items-center p-4 bg-slate-900/80 border border-slate-800 rounded-lg">
-        <img src={`${base}microsoft.jpg`} alt="Microsoft" class="w-24 h-24 object-contain shrink-0" />
+      <div class="flex gap-6 items-start p-4 bg-slate-900/80 border border-slate-800 rounded-lg">
+        <img src={`${base}microsoft.jpg`} alt="Microsoft" class="w-24 h-24 object-contain shrink-0 mt-1" />
         <div>
-          <h3 class="font-semibold">Senior Cloud Network Engineer at Microsoft</h3>
-          <span class="text-sm text-slate-400">Feb 2025 – Present</span>
-          <p class="text-sm text-slate-400 mt-2">I am part of the Azure WAN IP engineering team that onboards new hardware or design used to build/improve the backbone network for Azure Cloud services. The activities include onboarding new devices, line cards, or code to the network by doing the required tests to ensure seamless integration with the production network.</p>
-        </div>
-      </div>
-
-      <div class="flex gap-6 items-center p-4 bg-slate-900/80 border border-slate-800 rounded-lg">
-        <img src={`${base}aws.jpg`} alt="AWS" class="w-24 h-24 object-contain shrink-0" />
-        <div>
-          <h3 class="font-semibold">Network Development Engineer at AWS</h3>
-          <span class="text-sm text-slate-400">Jan 2020 – Feb 2025</span>
+          <h3 class="font-semibold">Senior Cloud Network Engineer at Microsoft (Azure)</h3>
+          <span class="text-sm text-slate-400">Mar 03, 2025 – Present</span>
+          <p class="text-sm text-slate-400 mt-2">I work in the WAN IP team, where we aim to deliver a WAN infrastructure that seamlessly supports exponential traffic growth, adapts to emerging technologies, and sets the industry benchmark for performance, reliability, and operational excellence.</p>
           <ul class="text-sm text-slate-400 mt-2 list-disc pl-5 space-y-2">
-            <li><strong>Amazon Just Walk Out stores</strong>: Evaluating customer needs, designing feature implementations, and ensuring seamless integration with systems that manage configuration updates. Enhanced coding and automation skills in Python.</li>
-            <li><strong>AWS DX deployment Team</strong>: Facilitated new DX customer connections deploying routing and switching devices (Juniper/Cisco) using AWS automation tools and Change Management processes.</li>
+            <li><strong>Network Automation</strong>: Understand the automation systems and packages in use. Identify and resolve software bugs or collaborate with software engineers. Improve existing automation and add new features. Ensure metadata and templates are updated when new platforms or features are integrated.</li>
+            <li><strong>Network Operations</strong>: Participate in the on-call rotation to identify and resolve network issues, implementing improvements for prevention through increased observability and alarming. Handle customer requests to investigate ongoing network issues and work on remediation items.</li>
+            <li><strong>Network Design / Platform Onboarding</strong>: Participate in network design projects to support new customer demands. Onboard new platforms or device roles to maintain capacity. Perform laboratory testing for new features/platforms and multi-vendor interoperability. Perform OS certification to patch bugs or security vulnerabilities and assist with rolling out upgrades.</li>
           </ul>
         </div>
       </div>
 
-      <div class="flex gap-6 items-center p-4 bg-slate-900/80 border border-slate-800 rounded-lg">
-        <img src={`${base}cisco.jpg`} alt="Cisco" class="w-24 h-24 object-contain shrink-0" />
+      <div class="flex gap-6 items-start p-4 bg-slate-900/80 border border-slate-800 rounded-lg">
+        <img src={`${base}aws.jpg`} alt="AWS" class="w-24 h-24 object-contain shrink-0 mt-1" />
         <div>
-          <h3 class="font-semibold">Network Engineer at Cisco (Contractor Layer2)</h3>
-          <span class="text-sm text-slate-400">Oct 2018 – Dec 2019</span>
-          <p class="text-sm text-slate-400 mt-2">Built a green field MPLS Network for a big financial firm using Cisco ASR9K and ASR1K devices. Gained experience with Python automation, Segment Routing, and MACsec.</p>
+          <h3 class="font-semibold">Network Development Engineer at AWS</h3>
+          <span class="text-sm text-slate-400">Feb 15, 2021 – Feb 28, 2025</span>
+          <ul class="text-sm text-slate-400 mt-2 list-disc pl-5 space-y-2">
+            <li><strong>DX Deployment Team — Port Scaling</strong>: Reviewed forecasting data to identify sites requiring scaling. Performed assessments to determine requirements, configured networks in preparation for new devices, and verified device health before moving them into production.</li>
+            <li><strong>DX Deployment Team — Advanced Projects</strong>: Deployed a new solution involving previously unused equipment, documenting the process for future deployments. Executed a customer migration (~200 ports) from devices being decommissioned, building new automation workflows for fast, asynchronous, and reliable migrations.</li>
+            <li><strong>DX Deployment Team — Large-Scale Migration Lead</strong>: Led the planning and execution of a large-scale customer migration (~20,000 ports) due to vendor end-of-support. Collaborated with Customer Service, Data Center Operations, and Software teams to define migration strategy, develop robust tooling, and deploy replacement devices.</li>
+            <li><strong>Just Walk Out (Amazon Go)</strong>: Part of the Network Engineering team supporting Amazon Go stores using commodity switches running Linux-based software. Participated in on-call rotations, gathered design requirements, created and tested design proposals, defined deployment plans using CI/CD pipelines, and deployed solutions to stores.</li>
+          </ul>
         </div>
       </div>
 
-      <div class="flex gap-6 items-center p-4 bg-slate-900/80 border border-slate-800 rounded-lg">
-        <img src={`${base}cisco.jpg`} alt="Cisco" class="w-24 h-24 object-contain shrink-0" />
+      <div class="flex gap-6 items-start p-4 bg-slate-900/80 border border-slate-800 rounded-lg">
+        <img src={`${base}aws.jpg`} alt="AWS" class="w-24 h-24 object-contain shrink-0 mt-1" />
         <div>
-          <h3 class="font-semibold">Network Engineer at Cisco (Contractor TMP)</h3>
-          <span class="text-sm text-slate-400">Mar 2016 – Oct 2018</span>
-          <p class="text-sm text-slate-400 mt-2">Onsite Engineer for a large Service Provider in Mexico. Learned Service Provider platforms (ASR9K) and Data Center platforms (Nexus9000) with OSPF, BGP, PIM, IGMP, MPLS L3VPN/L2VPN, Multicast VPNs.</p>
+          <h3 class="font-semibold">Network Development Engineer at AWS (Contractor Collabera)</h3>
+          <span class="text-sm text-slate-400">Jan 06, 2020 – Dec 04, 2020</span>
+          <ul class="text-sm text-slate-400 mt-2 list-disc pl-5 space-y-2">
+            <li><strong>100G Deployments</strong>: Deployed hardware for 100G connections on the AWS Direct Connect service. Worked with automation tools being developed to speed up deployments, providing feedback and submitting code updates for review. Platforms used were Juniper MX devices running Junos OS.</li>
+            <li><strong>Port Scaling</strong>: Maintained port availability for new customers through multiple approaches: recycling unused ports, adding backbone capacity, installing new line cards, and deploying new devices.</li>
+          </ul>
         </div>
       </div>
 
-      <div class="flex gap-6 items-center p-4 bg-slate-900/80 border border-slate-800 rounded-lg">
-        <img src={`${base}produban.jpg`} alt="Produban" class="w-24 h-24 object-contain shrink-0" />
+      <div class="flex gap-6 items-start p-4 bg-slate-900/80 border border-slate-800 rounded-lg">
+        <img src={`${base}cisco.jpg`} alt="Cisco" class="w-24 h-24 object-contain shrink-0 mt-1" />
         <div>
-          <h3 class="font-semibold">Network Engineer at Produban (Santander bank)</h3>
-          <span class="text-sm text-slate-400">Oct 2015 – Mar 2016</span>
-          <p class="text-sm text-slate-400 mt-2">Deployment activities for bank Data Centers using Juniper and Cisco with MPLS, LDP, BGP, OSPF, EIGRP, HSRP, STP, LACP.</p>
+          <h3 class="font-semibold">Network Consulting Engineer at Layer2 (Cisco contractor)</h3>
+          <span class="text-sm text-slate-400">Oct 22, 2018 – Dec 20, 2019</span>
+          <p class="text-sm text-slate-400 mt-2">Worked for Morgan Stanley on a project to deploy a new greenfield backbone network and migrate data centers and branch offices.</p>
+          <ul class="text-sm text-slate-400 mt-2 list-disc pl-5 space-y-2">
+            <li>Reviewed high-level and low-level designs with the engineering team and provided feedback.</li>
+            <li>Used Python/Jinja2 templates to render and push device configurations.</li>
+            <li>Coordinated with remote hands and circuit providers for device installation and long-haul circuits.</li>
+            <li>Provisioned devices and verified control plane operations.</li>
+            <li>Executed maintenance windows to migrate data centers and branch offices to the new network.</li>
+          </ul>
         </div>
       </div>
 
-      <div class="flex gap-6 items-center p-4 bg-slate-900/80 border border-slate-800 rounded-lg">
-        <img src={`${base}megacable.jpg`} alt="Megacable" class="w-24 h-24 object-contain shrink-0" />
+      <div class="flex gap-6 items-start p-4 bg-slate-900/80 border border-slate-800 rounded-lg">
+        <img src={`${base}cisco.jpg`} alt="Cisco" class="w-24 h-24 object-contain shrink-0 mt-1" />
+        <div>
+          <h3 class="font-semibold">Onsite Engineer at TMP (Cisco contractor)</h3>
+          <span class="text-sm text-slate-400">Mar 14, 2016 – Oct 19, 2018</span>
+          <p class="text-sm text-slate-400 mt-2">Served as the Cisco Onsite Engineer for Megacable, acting as a bridge between the customer and Cisco.</p>
+          <ul class="text-sm text-slate-400 mt-2 list-disc pl-5 space-y-2">
+            <li>Assisted Cisco TAC in resolving cases faster by leveraging network knowledge and maintaining direct communication with customers.</li>
+            <li>Helped Cisco TAC reproduce network issues to suggest appropriate fixes.</li>
+            <li>Attended design sessions with customers and Cisco Advanced Services to accelerate the design process.</li>
+            <li>Gathered new requirements from different network teams at Megacable.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="flex gap-6 items-start p-4 bg-slate-900/80 border border-slate-800 rounded-lg">
+        <img src={`${base}produban.jpg`} alt="Produban" class="w-24 h-24 object-contain shrink-0 mt-1" />
+        <div>
+          <h3 class="font-semibold">Network Engineer at Produban (Santander Bank)</h3>
+          <span class="text-sm text-slate-400">Oct 19, 2015 – Mar 11, 2016</span>
+          <ul class="text-sm text-slate-400 mt-2 list-disc pl-5 space-y-2">
+            <li>Used change management processes for deployment activities including new connections, ACL updates, routing policy updates, and migrations.</li>
+            <li>Participated in a project to define new device connectivity for a planned data center presence in Dallas, US, collaborating with teams across areas and remote personnel.</li>
+            <li>Worked on breaking a Layer 2 domain into a Layer 3 domain to reduce loops on older Cisco Nexus devices, requiring careful planning to avoid service disruption.</li>
+            <li>Migrated services from a Juniper EX chassis device and coordinated its decommission.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="flex gap-6 items-start p-4 bg-slate-900/80 border border-slate-800 rounded-lg">
+        <img src={`${base}megacable.jpg`} alt="Megacable" class="w-24 h-24 object-contain shrink-0 mt-1" />
         <div>
           <h3 class="font-semibold">Network Engineer at Megacable</h3>
-          <span class="text-sm text-slate-400">Jan 2013 – Oct 2015</span>
-          <p class="text-sm text-slate-400 mt-2">Deployment for enterprise services based on L2VPNs and L3VPN. Part of the engineering team testing new platforms for new services.</p>
+          <span class="text-sm text-slate-400">Jan 07, 2013 – Oct 16, 2015</span>
+          <ul class="text-sm text-slate-400 mt-2 list-disc pl-5 space-y-2">
+            <li><strong>Deployment Engineer</strong>: Deployed L2VPN and L3VPN services for enterprise customers. Procured materials, coordinated with technicians for cable installation and device connections, and verified performance tests (EtherSAM / BERT) met SLA commitments.</li>
+            <li><strong>Design Engineer</strong>: Worked with the product team on new service requirements. Established relationships with new vendors (Juniper, Palo Alto, Meraki) to provide alternatives and reduce reliance on Cisco devices. Worked on tailored services for government projects including security and Wi-Fi coverage. Collaborated with Cisco Meraki to develop and test a solution for a government project connecting hospitals, schools, universities, and public spaces using Megacable's coaxial network.</li>
+          </ul>
         </div>
       </div>
 
-      <div class="flex gap-6 items-center p-4 bg-slate-900/80 border border-slate-800 rounded-lg">
-        <img src={`${base}hemac.png`} alt="HEMAC" class="w-24 h-24 object-contain shrink-0" />
+      <div class="flex gap-6 items-start p-4 bg-slate-900/80 border border-slate-800 rounded-lg">
+        <img src={`${base}hemac.png`} alt="HEMAC" class="w-24 h-24 object-contain shrink-0 mt-1" />
         <div>
-          <h3 class="font-semibold">Wireless Design Engineer at HEMAC</h3>
-          <span class="text-sm text-slate-400">Jan 2011 – Jan 2013</span>
-          <p class="text-sm text-slate-400 mt-2">Development of microwave path studies to Mexican mobile operators (Alestra and Telcel). Government project to connect state offices, educational and health buildings.</p>
+          <h3 class="font-semibold">Wireless Design Engineer at HEMAC Teleinformatica</h3>
+          <span class="text-sm text-slate-400">Jan 03, 2011 – Jan 04, 2013</span>
+          <ul class="text-sm text-slate-400 mt-2 list-disc pl-5 space-y-2">
+            <li>Performed line-of-sight (LOS) studies to determine wireless link feasibility between remote locations, defining antenna type, frequency, and power to support requested bandwidth.</li>
+            <li>Performed coverage analysis for a government project connecting hospitals, schools, universities, and public spaces with free Wi-Fi using a point-to-multipoint WiMAX network.</li>
+            <li>Installed wireless antennas and Cisco routers to provide network connectivity to government sites.</li>
+          </ul>
         </div>
       </div>
 
@@ -113,7 +157,40 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
   <!-- Teaching -->
   <section class="mb-10">
     <h2 class="text-xl font-semibold pb-2 mb-4 border-b border-slate-700">🏫 Teaching Experience</h2>
-    <p class="text-slate-400"><strong>Networking teacher</strong> at UVM and UAG (Mexican private universities) imparting Network 3 and Network 4 for the Cisco Network Academy.</p>
+    <div class="space-y-3">
+      <div class="p-4 bg-slate-900/80 border border-slate-800 rounded-lg">
+        <h3 class="font-semibold">Networking Teacher — Universidad Autónoma de Guadalajara (UAG)</h3>
+        <span class="text-sm text-slate-400">May 2019 – Sep 2019</span>
+        <p class="text-sm text-slate-400 mt-2">Taught the final Cisco Networking Academy module focused on routing protocols. Classes included a theoretical component with primary focus on hands-on work using physical network devices in the school laboratory.</p>
+      </div>
+      <div class="p-4 bg-slate-900/80 border border-slate-800 rounded-lg">
+        <h3 class="font-semibold">Networking Teacher — Universidad del Valle de México (UVM)</h3>
+        <span class="text-sm text-slate-400">Aug 2017 – May 2019</span>
+        <p class="text-sm text-slate-400 mt-2">Taught the final Cisco Networking Academy module focused on routing protocols. Classes included a theoretical component with primary focus on hands-on work using physical network devices in the school laboratory.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Certifications -->
+  <section class="mb-10">
+    <h2 class="text-xl font-semibold pb-2 mb-4 border-b border-slate-700">🏅 Certifications</h2>
+    <div class="space-y-3">
+      <div class="p-4 bg-slate-900/80 border border-slate-800 rounded-lg">
+        <h3 class="font-semibold">CCIE Service Provider</h3>
+        <span class="text-sm text-slate-400">Cisco Systems — Oct 2018</span>
+        <p class="text-sm text-slate-400 mt-2">Expert-level certification for Service Provider technologies with Cisco network devices using IOS XE or IOS XR. <a href="https://cp.certmetrics.com/cisco/en/public/verify/credential/06QQGXDFJDBE1LKZ" class="text-blue-400 hover:underline" target="_blank">Verify</a></p>
+      </div>
+      <div class="p-4 bg-slate-900/80 border border-slate-800 rounded-lg">
+        <h3 class="font-semibold">CCNP Routing & Switching</h3>
+        <span class="text-sm text-slate-400">Cisco Systems — Apr 2014</span>
+        <p class="text-sm text-slate-400 mt-2">Professional-level certification for Routing and Switching technologies on enterprise networks. <a href="https://cp.certmetrics.com/cisco/en/public/verify/credential/417444168480ALYI" class="text-blue-400 hover:underline" target="_blank">Verify</a></p>
+      </div>
+      <div class="p-4 bg-slate-900/80 border border-slate-800 rounded-lg">
+        <h3 class="font-semibold">CCNA Routing & Switching</h3>
+        <span class="text-sm text-slate-400">Cisco Systems — Nov 2013</span>
+        <p class="text-sm text-slate-400 mt-2">Associate-level certification for Routing and Switching technologies on enterprise networks. <a href="https://cp.certmetrics.com/cisco/en/public/verify/credential/14LB3DYJ7GF1QD59" class="text-blue-400 hover:underline" target="_blank">Verify</a></p>
+      </div>
+    </div>
   </section>
 
   <!-- Education -->
@@ -123,7 +200,7 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
       <img src={`${base}udg_cucei.png`} alt="UDG" class="w-24 object-contain shrink-0" />
       <div>
         <h3 class="font-semibold">Bachelor's degree in Communications and Electronics Engineering</h3>
-        <span class="text-sm text-slate-400">Guadalajara's University (2006–2010)</span>
+        <span class="text-sm text-slate-400">Universidad de Guadalajara (Aug 2006 – Dec 2010)</span>
       </div>
     </div>
   </section>
