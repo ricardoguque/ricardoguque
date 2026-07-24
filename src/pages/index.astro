@@ -10,24 +10,32 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
     <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
     <title>Ricardo Gutierrez Quezada</title>
   </head>
-  <body class="bg-black text-slate-200 font-sans leading-relaxed relative overflow-x-hidden">
-    <div class="animated-bg"></div>
+  <body class="bg-slate-950 text-slate-300 font-sans leading-relaxed relative overflow-x-hidden">
+    <div class="bg-orbs" aria-hidden="true">
+      <span class="orb orb-1"></span>
+      <span class="orb orb-2"></span>
+      <span class="orb orb-3"></span>
+      <span class="orb orb-4"></span>
+    </div>
+    <div class="grid-overlay"></div>
+    <div id="particles" class="particles" aria-hidden="true"></div>
+    <div id="flash" class="flash-layer" aria-hidden="true"></div>
     <main class="max-w-5xl mx-auto px-6 py-10 relative z-10">
 
   <!-- Header -->
   <header class="text-center mb-12">
-    <img src={`${base}yo.jpg`} alt="Ricardo Gutierrez Quezada" class="w-36 h-36 rounded-full object-cover mx-auto mb-4" />
-    <h1 class="text-3xl font-bold">Ricardo Gutierrez Quezada</h1>
-    <p class="text-lg text-slate-400 mt-1">Network Engineer having fun with network automation</p>
+    <img src={`${base}yo.jpg`} alt="Ricardo Gutierrez Quezada" class="w-36 h-36 rounded-full object-cover mx-auto mb-5 avatar-ring" />
+    <h1 class="text-4xl font-bold tracking-tight site-name">Ricardo Gutierrez Quezada</h1>
+    <p class="text-lg text-slate-400 mt-2">Network Engineer having fun with network automation</p>
     <nav class="flex gap-6 justify-center mt-4">
-      <a href="https://github.com/ricardoguque" class="text-blue-400 hover:underline">GitHub</a>
-      <a href="https://www.linkedin.com/in/ricardo-gutierrez-b3446475/" class="text-blue-400 hover:underline">LinkedIn</a>
+      <a href="https://github.com/ricardoguque" class="accent-link">GitHub</a>
+      <a href="https://www.linkedin.com/in/ricardo-gutierrez-b3446475/" class="accent-link">LinkedIn</a>
     </nav>
   </header>
 
   <!-- About -->
   <section class="mb-10">
-    <h2 class="text-xl font-semibold pb-2 mb-4 border-b border-slate-700">👨‍💻 About me</h2>
+    <h2 class="text-xl font-semibold pb-2 mb-4 section-rule">👨‍💻 About me</h2>
     <div class="space-y-3 text-slate-400">
       <p>Experienced Network Engineer with a proven track record since 2011 in managing and optimizing large-scale network environments, including Service Providers, Cloud Providers, and enterprise networks. I hold a <strong>CCIE Service Provider</strong> certification and specialize in the deployment of complex networking solutions, network automation, and leading technical projects across regions.</p>
       <p>Currently at Microsoft Azure, I work on WAN infrastructure supporting exponential traffic growth, focusing on network automation, platform onboarding, and operational excellence. Previously at AWS, I led a large-scale customer migration of ~20,000 Direct Connect ports and was part of the Amazon Go (Just Walk Out) team, where I designed and deployed networks using commodity hardware running Linux-based software with applications like FRR, iptables, keepalived, DHCP, strongSwan, and in-house agents integrated with ZTP and CI/CD pipelines.</p>
@@ -38,10 +46,10 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 
   <!-- Professional Experience -->
   <section class="mb-10">
-    <h2 class="text-xl font-semibold pb-2 mb-4 border-b border-slate-700">📚 Professional Experience</h2>
+    <h2 class="text-xl font-semibold pb-2 mb-4 section-rule">📚 Professional Experience</h2>
     <div class="space-y-3">
 
-      <div class="flex gap-6 items-start p-4 bg-slate-900/80 border border-slate-800 rounded-lg">
+      <div class="flex gap-6 items-start p-4 card">
         <img src={`${base}microsoft.jpg`} alt="Microsoft" class="w-24 h-24 object-contain shrink-0 mt-1" />
         <div>
           <h3 class="font-semibold">Senior Cloud Network Engineer at Microsoft (Azure)</h3>
@@ -52,10 +60,16 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
             <li><strong>Network Operations</strong>: Participate in the on-call rotation to identify and resolve network issues, implementing improvements for prevention through increased observability and alarming. Handle customer requests to investigate ongoing network issues and work on remediation items.</li>
             <li><strong>Network Design / Platform Onboarding</strong>: Participate in network design projects to support new customer demands. Onboard new platforms or device roles to maintain capacity. Perform laboratory testing for new features/platforms and multi-vendor interoperability. Perform OS certification to patch bugs or security vulnerabilities and assist with rolling out upgrades.</li>
           </ul>
+          <div class="project-highlight">
+            <span class="ph-label">★ Highlighted project</span>
+            <p class="text-sm text-slate-300 mt-1 font-medium">Scaling IS-IS convergence on a hyperscale WAN</p>
+            <p class="text-sm text-slate-400 mt-1">As the network grew, slow convergence on topology changes began to affect optimal path selection. Researched and prototyped alternatives — multi-instance IS-IS, hierarchical IS-IS, and a Unified MPLS design — while accounting for scale limits flagged across Cisco, Arista, and Juniper platforms. Identified a key BGP capability that revived a previously rejected Unified MPLS + Segment Routing approach, stitching separate IS-IS domains into a single forwarding plane using SR Prefix-SIDs advertised over BGP. The design removed the need for a separate LDP/RSVP-TE signaling plane, reducing protocol overhead, and was adopted as the team's technical direction.</p>
+            <div class="project-tags"><span>IS-IS</span><span>BGP</span><span>Segment Routing</span><span>SR-MPLS</span><span>Unified MPLS</span></div>
+          </div>
         </div>
       </div>
 
-      <div class="flex gap-6 items-start p-4 bg-slate-900/80 border border-slate-800 rounded-lg">
+      <div class="flex gap-6 items-start p-4 card">
         <img src={`${base}aws.jpg`} alt="AWS" class="w-24 h-24 object-contain shrink-0 mt-1" />
         <div>
           <h3 class="font-semibold">Network Development Engineer at AWS</h3>
@@ -66,10 +80,24 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
             <li><strong>DX Deployment Team — Large-Scale Migration Lead</strong>: Led the planning and execution of a large-scale customer migration (~20,000 ports) due to vendor end-of-support. Collaborated with Customer Service, Data Center Operations, and Software teams to define migration strategy, develop robust tooling, and deploy replacement devices.</li>
             <li><strong>Just Walk Out (Amazon Go)</strong>: Part of the Network Engineering team supporting Amazon Go stores using commodity switches running Linux-based software. Participated in on-call rotations, gathered design requirements, created and tested design proposals, defined deployment plans using CI/CD pipelines, and deployed solutions to stores.</li>
           </ul>
+          <div class="project-highlight">
+            <span class="ph-label">★ Highlighted projects</span>
+
+            <p class="text-sm text-slate-300 mt-2 font-medium">Japan data-center decommission — asynchronous migration tooling</p>
+            <p class="text-sm text-slate-400 mt-1">Migrated ~200 customer connections off two Juniper MX960s at an Equinix facility in Japan ahead of a power and cooling refresh. Existing tooling only supported about five physical connections at a time, so built an automation solution enabling fast, asynchronous migrations with no rollback needed for connections already moved. Reconciled a verified migration list with Equinix technicians before each window so only approved customers were touched. Throughput rose to up to 30 connections per night (previous max: 4), and the effort finished on schedule — which led to selection for the fleet-wide migration below.</p>
+
+            <p class="text-sm text-slate-300 mt-3 font-medium">Juniper MX960 end-of-sale — 20,000-port migration lead</p>
+            <p class="text-sm text-slate-400 mt-1">Led the fleet-wide migration replacing ~500 legacy devices and ~20,000 physical connections. Positioned new devices adjacent to existing infrastructure to minimize connection moves and human error, coordinated with Data Center Operations, and established an advance customer-notification process for multi-day site cutovers. Deployed ~30 new devices across EMEA and set the playbook that guided rollouts in additional regions.</p>
+
+            <p class="text-sm text-slate-300 mt-3 font-medium">Just Walk Out (Amazon Go) — WAN-failover for cashierless stores</p>
+            <p class="text-sm text-slate-400 mt-1">Helped move the store network from a vendor-device model to a Linux-based, CI/CD-driven ecosystem. Designed a fallback connectivity model that preserved customer entry and card-registration traffic during WAN outages: a dedicated store-gate VLAN with consistent addressing, BGP in a Clos-like topology advertising the prefixes over both primary and backup paths, and route-preference logic favoring the primary link. Hardware and OS limits required two redesigns; delivered across ~300 stores in multiple regions with no service disruption — the team's first project with zero technical debt, and a reference design for later resilience work.</p>
+
+            <div class="project-tags"><span>Automation</span><span>BGP</span><span>Clos</span><span>Linux</span><span>CI/CD</span><span>Juniper MX960</span></div>
+          </div>
         </div>
       </div>
 
-      <div class="flex gap-6 items-start p-4 bg-slate-900/80 border border-slate-800 rounded-lg">
+      <div class="flex gap-6 items-start p-4 card">
         <img src={`${base}aws.jpg`} alt="AWS" class="w-24 h-24 object-contain shrink-0 mt-1" />
         <div>
           <h3 class="font-semibold">Network Development Engineer at AWS (Collabera Contractor)</h3>
@@ -81,7 +109,7 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
         </div>
       </div>
 
-      <div class="flex gap-6 items-start p-4 bg-slate-900/80 border border-slate-800 rounded-lg">
+      <div class="flex gap-6 items-start p-4 card">
         <img src={`${base}cisco.jpg`} alt="Cisco" class="w-24 h-24 object-contain shrink-0 mt-1" />
         <div>
           <h3 class="font-semibold">Network Consulting Engineer at Layer2 (Cisco contractor)</h3>
@@ -94,10 +122,16 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
             <li>Provisioned devices and verified control plane operations.</li>
             <li>Executed maintenance windows to migrate data centers and branch offices to the new network.</li>
           </ul>
+          <div class="project-highlight">
+            <span class="ph-label">★ Highlighted project</span>
+            <p class="text-sm text-slate-300 mt-1 font-medium">Morgan Stanley greenfield Segment Routing backbone</p>
+            <p class="text-sm text-slate-400 mt-1">Deployment engineer on a joint Cisco–Morgan Stanley program building a new global backbone (Cisco 9000-series, Segment Routing) to carry traffic between data centers and branch sites worldwide. Aligned circuit activation, rack/power readiness, cabling, and control-plane validation with Site Services so infrastructure issues were caught before they impacted deployment timelines. The project completed on time and the data-center migration succeeded on the first attempt; Morgan Stanley requested on-site support in New York during the cutover.</p>
+            <div class="project-tags"><span>Segment Routing</span><span>Cisco 9000</span><span>Backbone</span><span>DC Migration</span></div>
+          </div>
         </div>
       </div>
 
-      <div class="flex gap-6 items-start p-4 bg-slate-900/80 border border-slate-800 rounded-lg">
+      <div class="flex gap-6 items-start p-4 card">
         <img src={`${base}cisco.jpg`} alt="Cisco" class="w-24 h-24 object-contain shrink-0 mt-1" />
         <div>
           <h3 class="font-semibold">Onsite Engineer at TMP (Cisco contractor)</h3>
@@ -112,7 +146,7 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
         </div>
       </div>
 
-      <div class="flex gap-6 items-start p-4 bg-slate-900/80 border border-slate-800 rounded-lg">
+      <div class="flex gap-6 items-start p-4 card">
         <img src={`${base}produban.jpg`} alt="Produban" class="w-24 h-24 object-contain shrink-0 mt-1" />
         <div>
           <h3 class="font-semibold">Network Engineer at Produban (Santander Bank)</h3>
@@ -126,7 +160,7 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
         </div>
       </div>
 
-      <div class="flex gap-6 items-start p-4 bg-slate-900/80 border border-slate-800 rounded-lg">
+      <div class="flex gap-6 items-start p-4 card">
         <img src={`${base}megacable.jpg`} alt="Megacable" class="w-24 h-24 object-contain shrink-0 mt-1" />
         <div>
           <h3 class="font-semibold">Network Engineer at Megacable</h3>
@@ -138,7 +172,7 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
         </div>
       </div>
 
-      <div class="flex gap-6 items-start p-4 bg-slate-900/80 border border-slate-800 rounded-lg">
+      <div class="flex gap-6 items-start p-4 card">
         <img src={`${base}hemac.png`} alt="HEMAC" class="w-24 h-24 object-contain shrink-0 mt-1" />
         <div>
           <h3 class="font-semibold">Wireless Design Engineer at HEMAC Teleinformatica</h3>
@@ -156,8 +190,8 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 
   <!-- Teaching -->
   <section class="mb-10">
-    <h2 class="text-xl font-semibold pb-2 mb-4 border-b border-slate-700">🏫 Teaching Experience</h2>
-    <div class="p-4 bg-slate-900/80 border border-slate-800 rounded-lg">
+    <h2 class="text-xl font-semibold pb-2 mb-4 section-rule">🏫 Teaching Experience</h2>
+    <div class="p-4 card">
       <h3 class="font-semibold">Networking Teacher</h3>
       <ul class="text-sm text-slate-400 mt-1 list-disc pl-5">
         <li><strong>Universidad Autónoma de Guadalajara (UAG)</strong> — May 2019 – Sep 2019</li>
@@ -169,30 +203,30 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 
   <!-- Certifications -->
   <section class="mb-10">
-    <h2 class="text-xl font-semibold pb-2 mb-4 border-b border-slate-700">🏅 Certifications</h2>
+    <h2 class="text-xl font-semibold pb-2 mb-4 section-rule">🏅 Certifications</h2>
     <div class="space-y-3">
-      <div class="p-4 bg-slate-900/80 border border-slate-800 rounded-lg">
+      <div class="p-4 card">
         <h3 class="font-semibold">CCIE Service Provider</h3>
         <span class="text-sm text-slate-400">Cisco Systems — Oct 2018</span>
-        <p class="text-sm text-slate-400 mt-2">Expert-level certification for Service Provider technologies with Cisco network devices using IOS XE or IOS XR. <a href="https://cp.certmetrics.com/cisco/en/public/verify/credential/06QQGXDFJDBE1LKZ" class="text-blue-400 hover:underline" target="_blank">Verify</a></p>
+        <p class="text-sm text-slate-400 mt-2">Expert-level certification for Service Provider technologies with Cisco network devices using IOS XE or IOS XR. <a href="https://cp.certmetrics.com/cisco/en/public/verify/credential/06QQGXDFJDBE1LKZ" class="accent-link" target="_blank">Verify</a></p>
       </div>
-      <div class="p-4 bg-slate-900/80 border border-slate-800 rounded-lg">
+      <div class="p-4 card">
         <h3 class="font-semibold">CCNP Routing & Switching</h3>
         <span class="text-sm text-slate-400">Cisco Systems — Apr 2014</span>
-        <p class="text-sm text-slate-400 mt-2">Professional-level certification for Routing and Switching technologies on enterprise networks. <a href="https://cp.certmetrics.com/cisco/en/public/verify/credential/417444168480ALYI" class="text-blue-400 hover:underline" target="_blank">Verify</a></p>
+        <p class="text-sm text-slate-400 mt-2">Professional-level certification for Routing and Switching technologies on enterprise networks. <a href="https://cp.certmetrics.com/cisco/en/public/verify/credential/417444168480ALYI" class="accent-link" target="_blank">Verify</a></p>
       </div>
-      <div class="p-4 bg-slate-900/80 border border-slate-800 rounded-lg">
+      <div class="p-4 card">
         <h3 class="font-semibold">CCNA Routing & Switching</h3>
         <span class="text-sm text-slate-400">Cisco Systems — Nov 2013</span>
-        <p class="text-sm text-slate-400 mt-2">Associate-level certification for Routing and Switching technologies on enterprise networks. <a href="https://cp.certmetrics.com/cisco/en/public/verify/credential/14LB3DYJ7GF1QD59" class="text-blue-400 hover:underline" target="_blank">Verify</a></p>
+        <p class="text-sm text-slate-400 mt-2">Associate-level certification for Routing and Switching technologies on enterprise networks. <a href="https://cp.certmetrics.com/cisco/en/public/verify/credential/14LB3DYJ7GF1QD59" class="accent-link" target="_blank">Verify</a></p>
       </div>
     </div>
   </section>
 
   <!-- Education -->
   <section class="mb-10">
-    <h2 class="text-xl font-semibold pb-2 mb-4 border-b border-slate-700">🎓 Education</h2>
-    <div class="flex gap-6 items-center p-4 bg-slate-900/80 border border-slate-800 rounded-lg">
+    <h2 class="text-xl font-semibold pb-2 mb-4 section-rule">🎓 Education</h2>
+    <div class="flex gap-6 items-center p-4 card">
       <img src={`${base}udg_cucei.png`} alt="UDG" class="w-24 object-contain shrink-0" />
       <div>
         <h3 class="font-semibold">Bachelor's degree in Communications and Electronics Engineering</h3>
@@ -205,39 +239,358 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
     <footer class="text-center py-8 text-sm text-slate-500 border-t border-slate-800 relative z-10">
       <p>&copy; {new Date().getFullYear()} Ricardo Gutierrez Quezada</p>
     </footer>
+    <div id="theme-label" class="theme-label" aria-live="polite"></div>
   </body>
 </html>
 
 <style is:global>
-  .animated-bg {
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-    background:
-      radial-gradient(ellipse 600px 600px at 10% 20%, rgba(59, 130, 246, 0.06), transparent),
-      radial-gradient(ellipse 500px 500px at 80% 60%, rgba(139, 92, 246, 0.06), transparent),
-      radial-gradient(ellipse 400px 400px at 50% 90%, rgba(6, 182, 212, 0.05), transparent);
-    animation: drift 20s ease-in-out infinite alternate;
+  /* Default palette (summer) — themes override these vars on <body> */
+  :root {
+    --grad-from: #fcd34d; --grad-via: #fb923c; --grad-to: #fb7185; --accent: #fbbf24;
   }
 
-  @keyframes drift {
-    0% {
-      background:
-        radial-gradient(ellipse 600px 600px at 10% 20%, rgba(59, 130, 246, 0.06), transparent),
-        radial-gradient(ellipse 500px 500px at 80% 60%, rgba(139, 92, 246, 0.06), transparent),
-        radial-gradient(ellipse 400px 400px at 50% 90%, rgba(6, 182, 212, 0.05), transparent);
-    }
-    50% {
-      background:
-        radial-gradient(ellipse 700px 700px at 30% 70%, rgba(59, 130, 246, 0.07), transparent),
-        radial-gradient(ellipse 600px 600px at 70% 20%, rgba(139, 92, 246, 0.05), transparent),
-        radial-gradient(ellipse 500px 500px at 20% 40%, rgba(6, 182, 212, 0.06), transparent);
-    }
-    100% {
-      background:
-        radial-gradient(ellipse 500px 500px at 80% 30%, rgba(59, 130, 246, 0.05), transparent),
-        radial-gradient(ellipse 600px 600px at 20% 80%, rgba(139, 92, 246, 0.07), transparent),
-        radial-gradient(ellipse 700px 700px at 60% 50%, rgba(6, 182, 212, 0.06), transparent);
-    }
+  /* Accent elements driven by theme vars */
+  .site-name {
+    background-image: linear-gradient(to right, var(--grad-from), var(--grad-via), var(--grad-to));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .accent-link { color: var(--accent); transition: color .2s ease; }
+  .accent-link:hover { color: color-mix(in srgb, var(--accent) 70%, white); text-decoration: underline; }
+  .section-rule { border-bottom: 2px solid color-mix(in srgb, var(--accent) 45%, transparent); }
+  .avatar-ring { box-shadow: 0 0 0 4px #020617, 0 0 0 6px var(--accent); }
+  .card {
+    background: rgba(15, 23, 42, .5);
+    border: 1px solid rgba(30, 41, 59, .8);
+    border-radius: .75rem;
+    backdrop-filter: blur(4px);
+    transition: border-color .3s ease, background .3s ease, box-shadow .3s ease, transform .3s ease;
+  }
+  .card:hover {
+    border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+    background: rgba(15, 23, 42, .7);
+    box-shadow: 0 14px 34px -14px color-mix(in srgb, var(--accent) 55%, transparent);
+    transform: translateY(-2px);
+  }
+
+  /* Highlighted project callouts (theme-aware accent) */
+  .project-highlight {
+    margin-top: .85rem; padding: .7rem .95rem;
+    border-left: 3px solid color-mix(in srgb, var(--accent) 60%, transparent);
+    background: rgba(2, 6, 23, .35); border-radius: .5rem;
+  }
+  .ph-label {
+    display: inline-flex; align-items: center; gap: .35rem;
+    font-size: .7rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em;
+    color: color-mix(in srgb, var(--accent) 80%, white);
+  }
+  .project-tags { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .55rem; }
+  .project-tags span {
+    font-size: .68rem; padding: .12rem .55rem; border-radius: 9999px;
+    color: color-mix(in srgb, var(--accent) 85%, white);
+    border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+    background: rgba(15, 23, 42, .5);
+  }
+
+  /* Ambient wash tinted by the active theme */
+  body::before {
+    content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: .10;
+    background: radial-gradient(ellipse 90% 60% at 50% 0%, var(--grad-via), transparent 70%);
+  }
+
+  /* Glow orbs — colors come from theme vars */
+  .bg-orbs { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+  .orb { position: absolute; border-radius: 9999px; filter: blur(70px); opacity: .4; will-change: transform; }
+  .orb-1 { width: 420px; height: 420px; top: -80px; left: -60px;
+    background: radial-gradient(circle, var(--grad-from), transparent 70%); animation: float-1 26s linear infinite; }
+  .orb-2 { width: 360px; height: 360px; top: 20%; right: -80px; left: auto;
+    background: radial-gradient(circle, var(--grad-via), transparent 70%); animation: float-2 32s linear infinite; }
+  .orb-3 { width: 460px; height: 460px; bottom: -120px; left: 15%;
+    background: radial-gradient(circle, var(--grad-to), transparent 70%); animation: float-3 38s linear infinite; }
+  .orb-4 { width: 300px; height: 300px; top: 45%; left: 55%;
+    background: radial-gradient(circle, var(--accent), transparent 70%); animation: float-4 29s linear infinite; }
+
+  @keyframes float-1 { 0%{transform:translate(0,0)}25%{transform:translate(38vw,22vh)}50%{transform:translate(60vw,-6vh)}75%{transform:translate(24vw,30vh)}100%{transform:translate(0,0)} }
+  @keyframes float-2 { 0%{transform:translate(0,0)}25%{transform:translate(-34vw,26vh)}50%{transform:translate(-52vw,55vh)}75%{transform:translate(-18vw,20vh)}100%{transform:translate(0,0)} }
+  @keyframes float-3 { 0%{transform:translate(0,0)}25%{transform:translate(30vw,-28vh)}50%{transform:translate(55vw,-12vh)}75%{transform:translate(16vw,-40vh)}100%{transform:translate(0,0)} }
+  @keyframes float-4 { 0%{transform:translate(0,0)}25%{transform:translate(-28vw,-24vh)}50%{transform:translate(-8vw,-48vh)}75%{transform:translate(-40vw,-16vh)}100%{transform:translate(0,0)} }
+
+  /* Panning grid */
+  .grid-overlay {
+    position: fixed; inset: -48px; z-index: 0; pointer-events: none;
+    background-image:
+      linear-gradient(to right, rgba(148,163,184,.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(148,163,184,.05) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse 90% 75% at 50% 20%, black, transparent 78%);
+    -webkit-mask-image: radial-gradient(ellipse 90% 75% at 50% 20%, black, transparent 78%);
+    animation: grid-pan 7s linear infinite;
+  }
+  @keyframes grid-pan { from{background-position:0 0} to{background-position:48px 48px} }
+
+  /* Foreground particles */
+  .particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+  .particle {
+    position: absolute; line-height: 1; font-size: var(--size, 20px);
+    filter: drop-shadow(0 0 6px color-mix(in srgb, var(--accent) 40%, transparent));
+    will-change: transform, opacity;
+  }
+  .p-sway    { top: -12vh; left: var(--x); animation: p-sway var(--dur,10s) linear var(--delay,0s) infinite; }
+  .p-fall    { top: -12vh; left: var(--x); animation: p-fall var(--dur,3s) linear var(--delay,0s) infinite; }
+  .p-rise    { bottom: -12vh; left: var(--x); animation: p-rise var(--dur,12s) linear var(--delay,0s) infinite; }
+  .p-wind    { top: var(--y); left: -12vw; animation: p-wind var(--dur,7s) linear var(--delay,0s) infinite; }
+  .p-float   { top: var(--y); left: var(--x); animation: p-float var(--dur,18s) ease-in-out var(--delay,0s) infinite; }
+  .p-twinkle { top: var(--y); left: var(--x); animation: p-twinkle var(--dur,3s) ease-in-out var(--delay,0s) infinite; }
+  .particle.streak { width: 2px; height: var(--size, 22px); border-radius: 2px; filter: none;
+    background: linear-gradient(to bottom, transparent, rgba(147,197,253,.85)); }
+
+  @keyframes p-sway {
+    0%{transform:translate3d(0,0,0) rotate(0)}
+    25%{transform:translate3d(var(--sway,20px),30vh,0) rotate(90deg)}
+    50%{transform:translate3d(calc(var(--sway,20px)*-1),60vh,0) rotate(180deg)}
+    75%{transform:translate3d(var(--sway,20px),90vh,0) rotate(270deg)}
+    100%{transform:translate3d(0,124vh,0) rotate(360deg)}
+  }
+  @keyframes p-fall { 0%{transform:translate3d(0,0,0)} 100%{transform:translate3d(var(--drift,10px),124vh,0)} }
+  @keyframes p-rise {
+    0%{transform:translate3d(0,0,0);opacity:0}
+    12%{opacity:var(--op,.9)}
+    50%{transform:translate3d(var(--sway,30px),-62vh,0)}
+    88%{opacity:var(--op,.9)}
+    100%{transform:translate3d(0,-124vh,0);opacity:0}
+  }
+  @keyframes p-wind {
+    0%{transform:translate3d(0,0,0) rotate(0);opacity:0}
+    10%{opacity:var(--op,.9)}
+    90%{opacity:var(--op,.9)}
+    100%{transform:translate3d(128vw,var(--bob,8vh),0) rotate(var(--spin,180deg));opacity:0}
+  }
+  @keyframes p-float { 0%{transform:translate(0,0)}25%{transform:translate(6vw,-5vh)}50%{transform:translate(-5vw,4vh)}75%{transform:translate(4vw,6vh)}100%{transform:translate(0,0)} }
+  @keyframes p-twinkle { 0%,100%{opacity:.15;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)} }
+
+  /* Flash overlays */
+  .flash-layer { position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0; mix-blend-mode: screen; background: #fff; }
+  .flash-layer.lightning { animation: lightning 7s linear infinite; }
+  @keyframes lightning { 0%,90%,100%{opacity:0}91%{opacity:.55}92%{opacity:0}94%{opacity:.75}95%{opacity:0} }
+  .flash-layer.fireworks {
+    background:
+      radial-gradient(circle at 30% 30%, #fde68a, transparent 40%),
+      radial-gradient(circle at 70% 40%, #f0abfc, transparent 40%),
+      radial-gradient(circle at 50% 60%, #93c5fd, transparent 40%);
+    animation: fireworks 4s ease-in-out infinite;
+  }
+  @keyframes fireworks { 0%,100%{opacity:0}8%{opacity:.45}16%{opacity:0}55%{opacity:0}62%{opacity:.45}70%{opacity:0} }
+
+  /* Active theme label */
+  .theme-label {
+    position: fixed; left: 50%; bottom: 14px; transform: translateX(-50%);
+    z-index: 20; pointer-events: none;
+    display: flex; align-items: center; gap: .4rem;
+    padding: .35rem .85rem; border-radius: 9999px;
+    font-size: .75rem; letter-spacing: .03em; white-space: nowrap;
+    color: color-mix(in srgb, var(--accent) 88%, white);
+    background: rgba(15, 23, 42, .6);
+    border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+    box-shadow: 0 6px 20px -10px color-mix(in srgb, var(--accent) 60%, transparent);
+    backdrop-filter: blur(6px);
+    transition: color .3s ease, border-color .3s ease, box-shadow .3s ease;
+  }
+  .theme-label::before {
+    content: ""; width: .5rem; height: .5rem; border-radius: 9999px;
+    background: var(--accent); box-shadow: 0 0 8px var(--accent);
+  }
+
+  /* ===== Theme palettes ===== */
+  body.theme-summer          { --grad-from:#fcd34d; --grad-via:#fb923c; --grad-to:#fb7185; --accent:#fbbf24; }
+  body.theme-winter          { --grad-from:#bae6fd; --grad-via:#7dd3fc; --grad-to:#e0f2fe; --accent:#7dd3fc; }
+  body.theme-spring          { --grad-from:#86efac; --grad-via:#f9a8d4; --grad-to:#fda4af; --accent:#f472b6; }
+  body.theme-autumn          { --grad-from:#fbbf24; --grad-via:#f97316; --grad-to:#b45309; --accent:#f59e0b; }
+  body.theme-rain            { --grad-from:#93c5fd; --grad-via:#60a5fa; --grad-to:#94a3b8; --accent:#60a5fa; }
+  body.theme-snow            { --grad-from:#e0f2fe; --grad-via:#bae6fd; --grad-to:#7dd3fc; --accent:#93c5fd; }
+  body.theme-wind            { --grad-from:#a7f3d0; --grad-via:#99f6e4; --grad-to:#cbd5e1; --accent:#5eead4; }
+  body.theme-fog             { --grad-from:#cbd5e1; --grad-via:#94a3b8; --grad-to:#e2e8f0; --accent:#94a3b8; }
+  body.theme-thunderstorm    { --grad-from:#a5b4fc; --grad-via:#818cf8; --grad-to:#64748b; --accent:#818cf8; }
+  body.theme-starry          { --grad-from:#c4b5fd; --grad-via:#a78bfa; --grad-to:#93c5fd; --accent:#a78bfa; }
+  body.theme-aurora          { --grad-from:#6ee7b7; --grad-via:#5eead4; --grad-to:#c4b5fd; --accent:#34d399; }
+  body.theme-newyear         { --grad-from:#fde68a; --grad-via:#fbbf24; --grad-to:#f0abfc; --accent:#fbbf24; }
+  body.theme-valentine       { --grad-from:#fda4af; --grad-via:#fb7185; --grad-to:#f472b6; --accent:#fb7185; }
+  body.theme-lunarnewyear    { --grad-from:#fca5a5; --grad-via:#ef4444; --grad-to:#fbbf24; --accent:#fbbf24; }
+  body.theme-stpatrick       { --grad-from:#86efac; --grad-via:#4ade80; --grad-to:#22c55e; --accent:#4ade80; }
+  body.theme-easter          { --grad-from:#a5f3fc; --grad-via:#f9a8d4; --grad-to:#fde68a; --accent:#f0abfc; }
+  body.theme-earthday        { --grad-from:#86efac; --grad-via:#4ade80; --grad-to:#38bdf8; --accent:#34d399; }
+  body.theme-cinco           { --grad-from:#f9a8d4; --grad-via:#4ade80; --grad-to:#fde68a; --accent:#fb7185; }
+  body.theme-pride           { --grad-from:#f87171; --grad-via:#fbbf24; --grad-to:#a78bfa; --accent:#fb7185; }
+  body.theme-pride .site-name { background-image: linear-gradient(to right,#f87171,#fb923c,#fde047,#4ade80,#38bdf8,#a78bfa); }
+  body.theme-mexindependence { --grad-from:#4ade80; --grad-via:#f8fafc; --grad-to:#f87171; --accent:#4ade80; }
+  body.theme-halloween       { --grad-from:#fb923c; --grad-via:#a855f7; --grad-to:#f97316; --accent:#fb923c; }
+  body.theme-diamuertos      { --grad-from:#fbbf24; --grad-via:#fb7185; --grad-to:#a855f7; --accent:#f59e0b; }
+  body.theme-diwali          { --grad-from:#fde68a; --grad-via:#fb923c; --grad-to:#a855f7; --accent:#fbbf24; }
+  body.theme-thanksgiving    { --grad-from:#fbbf24; --grad-via:#f97316; --grad-to:#b45309; --accent:#f59e0b; }
+  body.theme-hanukkah        { --grad-from:#bfdbfe; --grad-via:#60a5fa; --grad-to:#e0f2fe; --accent:#60a5fa; }
+  body.theme-christmas       { --grad-from:#fca5a5; --grad-via:#4ade80; --grad-to:#fde68a; --accent:#f87171; }
+  body.theme-matrix          { --grad-from:#4ade80; --grad-via:#22c55e; --grad-to:#86efac; --accent:#22c55e; }
+  body.theme-birthday        { --grad-from:#f9a8d4; --grad-via:#fde047; --grad-to:#38bdf8; --accent:#f472b6; }
+  body.theme-matrix .particle { filter: none; color: #4ade80; font-family: ui-monospace, monospace; text-shadow: 0 0 6px #22c55e; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .orb, .grid-overlay, .particle, .flash-layer { animation: none !important; }
+    .particles { display: none; }
   }
 </style>
+
+<script>
+  const THEMES = {
+    summer:          { layers: [ { emojis: ['\u2600\uFE0F','\u{1F33B}','\u{1F41A}'], behavior: 'float', count: 6, size: [26,42], dur: [16,26] } ] },
+    winter:          { layers: [ { emojis: ['\u2744\uFE0F','\u2744','\u2022'], behavior: 'sway', count: 34, size: [10,20], dur: [8,16] } ] },
+    spring:          { layers: [ { emojis: ['\u{1F338}','\u{1F337}','\u{1F33C}','\u{1F343}'], behavior: 'sway', count: 26, size: [16,26], dur: [9,16] } ] },
+    autumn:          { layers: [ { emojis: ['\u{1F341}','\u{1F342}','\u{1F343}'], behavior: 'sway', count: 26, size: [16,28], dur: [8,15] } ] },
+    rain:            { layers: [ { shape: 'streak', behavior: 'fall', count: 60, size: [16,26], dur: [0.7,1.4] } ] },
+    snow:            { layers: [ { emojis: ['\u2744\uFE0F','\u2744','\u2022'], behavior: 'sway', count: 36, size: [10,22], dur: [8,16] } ] },
+    wind:            { layers: [ { emojis: ['\u{1F343}','\u{1F342}','\u{1F4A8}'], behavior: 'wind', count: 24, size: [16,28], dur: [5,9] } ] },
+    fog:             { layers: [ { emojis: ['\u{1F32B}\uFE0F'], behavior: 'float', count: 10, size: [70,130], dur: [20,34], op: 0.45 } ] },
+    thunderstorm:    { flash: 'lightning', layers: [ { shape: 'streak', behavior: 'fall', count: 64, size: [16,26], dur: [0.6,1.2] } ] },
+    starry:          { layers: [ { emojis: ['\u2726','\u2727','\u22C6','\u00B7'], behavior: 'twinkle', count: 64, size: [8,16], dur: [2,5] }, { emojis: ['\u{1F320}'], behavior: 'wind', count: 3, size: [24,34], dur: [3,6] } ] },
+    aurora:          { layers: [ { emojis: ['\u2726','\u00B7'], behavior: 'twinkle', count: 44, size: [6,12], dur: [2,5] } ] },
+    newyear:         { flash: 'fireworks', layers: [ { emojis: ['\u{1F389}','\u{1F38A}','\u2728','\u{1F942}'], behavior: 'fall', count: 26, size: [18,30], dur: [4,8] }, { emojis: ['\u{1F386}','\u{1F387}'], behavior: 'rise', count: 8, size: [26,40], dur: [6,11] } ] },
+    valentine:       { layers: [ { emojis: ['\u{1F497}','\u2764\uFE0F','\u{1F495}','\u{1F339}'], behavior: 'rise', count: 22, size: [16,30], dur: [8,15] } ] },
+    lunarnewyear:    { flash: 'fireworks', layers: [ { emojis: ['\u{1F3EE}','\u{1F9E7}','\u{1F386}','\u2728'], behavior: 'rise', count: 16, size: [20,34], dur: [7,13] } ] },
+    stpatrick:       { layers: [ { emojis: ['\u{1F340}','\u2618\uFE0F','\u{1F308}'], behavior: 'sway', count: 24, size: [16,26], dur: [9,16] } ] },
+    easter:          { layers: [ { emojis: ['\u{1F95A}','\u{1F430}','\u{1F337}','\u{1F423}'], behavior: 'sway', count: 22, size: [18,28], dur: [9,16] } ] },
+    earthday:        { layers: [ { emojis: ['\u{1F30D}','\u{1F331}','\u{1F343}','\u267B\uFE0F'], behavior: 'rise', count: 18, size: [18,30], dur: [10,18] } ] },
+    cinco:           { layers: [ { emojis: ['\u{1F389}','\u{1F336}\uFE0F','\u{1F32E}','\u{1F38A}','\u{1F1F2}\u{1F1FD}'], behavior: 'fall', count: 26, size: [18,30], dur: [5,9] } ] },
+    pride:           { layers: [ { emojis: ['\u{1F3F3}\uFE0F\u200D\u{1F308}','\u2764\uFE0F','\u{1F9E1}','\u{1F49B}','\u{1F49A}','\u{1F499}','\u{1F49C}'], behavior: 'rise', count: 22, size: [16,28], dur: [8,15] } ] },
+    mexindependence: { flash: 'fireworks', layers: [ { emojis: ['\u{1F1F2}\u{1F1FD}','\u{1F386}','\u{1F387}','\u2728'], behavior: 'rise', count: 14, size: [22,36], dur: [7,13] }, { emojis: ['\u{1F389}','\u{1F38A}'], behavior: 'fall', count: 16, size: [16,26], dur: [5,9] } ] },
+    halloween:       { layers: [ { emojis: ['\u{1F47B}','\u{1F383}','\u{1F987}','\u{1F578}\uFE0F'], behavior: 'float', count: 14, size: [24,40], dur: [12,22] }, { emojis: ['\u{1F987}'], behavior: 'wind', count: 6, size: [18,28], dur: [6,10] } ] },
+    diamuertos:      { layers: [ { emojis: ['\u{1F33C}','\u{1F480}','\u{1F56F}\uFE0F','\u{1F389}','\u{1F3F5}\uFE0F'], behavior: 'rise', count: 20, size: [18,32], dur: [8,15] } ] },
+    diwali:          { flash: 'fireworks', layers: [ { emojis: ['\u{1FA94}','\u{1F386}','\u2728','\u{1F3EE}'], behavior: 'rise', count: 16, size: [20,34], dur: [7,13] } ] },
+    thanksgiving:    { layers: [ { emojis: ['\u{1F341}','\u{1F342}','\u{1F983}','\u{1F33D}'], behavior: 'sway', count: 22, size: [18,30], dur: [9,16] } ] },
+    hanukkah:        { layers: [ { emojis: ['\u{1F54E}','\u2721\uFE0F','\u2744\uFE0F','\u2728'], behavior: 'sway', count: 24, size: [16,26], dur: [9,16] } ] },
+    christmas:       { layers: [ { emojis: ['\u2744\uFE0F','\u2744'], behavior: 'sway', count: 30, size: [10,20], dur: [8,15] }, { emojis: ['\u{1F384}','\u{1F385}','\u{1F381}','\u2B50'], behavior: 'fall', count: 12, size: [20,30], dur: [6,11] } ] },
+    matrix:          { layers: [ { emojis: ['0','1','\uFF8A','\uFF90','\uFF8B','\uFF66','\uFF71','7','9','\uFF82'], behavior: 'fall', count: 70, size: [14,22], dur: [2,5] } ] },
+    birthday:        { flash: 'fireworks', layers: [ { emojis: ['\u{1F388}','\u{1F389}','\u{1F382}','\u{1F38A}','\u{1F973}'], behavior: 'rise', count: 22, size: [18,32], dur: [8,15] } ] },
+  };
+
+  const ENABLE_WEATHER = true;
+  const rand = (a, b) => a + Math.random() * (b - a);
+  const ri = (a, b) => Math.floor(rand(a, b + 1));
+
+  function easterDate(y) {
+    const a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25),
+      g=Math.floor((b-f+1)/3),h=(19*a+b-d-g+15)%30,i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,
+      m=Math.floor((a+11*h+22*l)/451),mo=Math.floor((h+l-7*m+114)/31),da=((h+l-7*m+114)%31)+1;
+    return new Date(y, mo-1, da);
+  }
+  function nthWeekday(y, month, weekday, n) {
+    const first = new Date(y, month-1, 1);
+    const shift = (7 + weekday - first.getDay()) % 7;
+    return new Date(y, month-1, 1 + shift + (n-1)*7);
+  }
+  function seasonOf(m, d) {
+    const c = m*100 + d;
+    if (c>=321 && c<=620) return 'spring';
+    if (c>=621 && c<=921) return 'summer';
+    if (c>=922 && c<=1220) return 'autumn';
+    return 'winter';
+  }
+  const LUNAR = {2025:[1,29],2026:[2,17],2027:[2,6],2028:[1,26],2029:[2,13],2030:[2,3]};
+  const DIWALI = {2025:[10,20],2026:[11,8],2027:[10,29],2028:[10,17],2029:[11,5],2030:[10,26]};
+  const HANUKKAH = {2025:[12,14],2026:[12,4],2027:[12,24],2028:[12,12],2029:[12,1],2030:[12,20]};
+  const DAY = 86400000;
+  function hitsSingle(tbl, y, m, d, tol) {
+    const e = tbl[y]; if (!e) return false;
+    return Math.abs((new Date(y,m-1,d) - new Date(y,e[0]-1,e[1])) / DAY) <= tol;
+  }
+  function isHanukkah(y, m, d) {
+    const e = HANUKKAH[y]; if (!e) return false;
+    const diff = (new Date(y,m-1,d) - new Date(y,e[0]-1,e[1])) / DAY;
+    return diff >= 0 && diff <= 7;
+  }
+  function sameDayDate(a, b, tol) { return Math.abs((a - b) / DAY) <= tol; }
+  function dayOfYear(now) { return Math.floor((now - new Date(now.getFullYear(),0,0)) / DAY); }
+  const WEATHER = { winter:['snow','fog','aurora'], spring:['rain','wind','fog'], summer:['starry','wind'], autumn:['rain','wind','fog','thunderstorm'] };
+
+  function pickTheme(now) {
+    const q = new URLSearchParams(location.search).get('theme');
+    if (q && THEMES[q]) return q;
+    const y=now.getFullYear(), m=now.getMonth()+1, d=now.getDate();
+    const md=(a,b)=>m===a&&d===b, rng=(a,b,c,e)=>{const cur=m*100+d;return cur>=a*100+b&&cur<=c*100+e;};
+    if (md(1,1)||md(12,31)) return 'newyear';
+    if (md(2,14)) return 'valentine';
+    if (md(3,17)) return 'stpatrick';
+    if (md(4,1)) return 'matrix';
+    if (md(4,22)) return 'earthday';
+    if (md(5,5)) return 'cinco';
+    if (rng(9,15,9,16)) return 'mexindependence';
+    if (rng(10,29,10,31)) return 'halloween';
+    if (rng(11,1,11,2)) return 'diamuertos';
+    if (m===6) return 'pride';
+    if (hitsSingle(LUNAR,y,m,d,0)) return 'lunarnewyear';
+    if (hitsSingle(DIWALI,y,m,d,0)) return 'diwali';
+    if (isHanukkah(y,m,d)) return 'hanukkah';
+    if (sameDayDate(now, easterDate(y), 2)) return 'easter';
+    const tg = nthWeekday(y,11,4,4);
+    if (m===11 && d===tg.getDate()) return 'thanksgiving';
+    if (rng(12,20,12,26)) return 'christmas';
+    const season = seasonOf(m,d);
+    if (ENABLE_WEATHER) {
+      const pool = WEATHER[season];
+      if (dayOfYear(now) % 100 < 28) return pool[dayOfYear(now) % pool.length];
+    }
+    return season;
+  }
+
+  function spawn(box, l) {
+    const { emojis=[], behavior='sway', count=20, size=[16,26], dur=[8,16], op, shape } = l;
+    for (let i=0; i<count; i++) {
+      const el = document.createElement('span');
+      el.className = 'particle p-' + behavior + (shape ? ' ' + shape : '');
+      if (!shape) el.textContent = emojis[ri(0, emojis.length-1)];
+      const du = rand(dur[0], dur[1]);
+      el.style.setProperty('--size', ri(size[0], size[1]) + 'px');
+      el.style.setProperty('--x', ri(0,100) + 'vw');
+      el.style.setProperty('--y', ri(0,100) + 'vh');
+      el.style.setProperty('--dur', du.toFixed(2) + 's');
+      el.style.setProperty('--delay', (-rand(0, du)).toFixed(2) + 's');
+      el.style.setProperty('--sway', (ri(15,60) * (Math.random()<.5?-1:1)) + 'px');
+      el.style.setProperty('--drift', ri(-30,30) + 'px');
+      el.style.setProperty('--bob', ri(-12,12) + 'vh');
+      el.style.setProperty('--spin', (ri(90,360) * (Math.random()<.5?-1:1)) + 'deg');
+      if (op != null) { el.style.setProperty('--op', op); el.style.opacity = op; }
+      else el.style.opacity = behavior==='twinkle' ? rand(.3,1).toFixed(2) : '.9';
+      box.appendChild(el);
+    }
+  }
+
+  const DISPLAY = {
+    summer:'Summer \u2600\uFE0F', winter:'Winter \u2744\uFE0F', spring:'Spring \u{1F338}', autumn:'Autumn \u{1F342}',
+    rain:'Rainy \u{1F327}\uFE0F', snow:'Snow \u{1F328}\uFE0F', wind:'Windy \u{1F343}', fog:'Foggy \u{1F32B}\uFE0F',
+    thunderstorm:'Thunderstorm \u26C8\uFE0F', starry:'Starry Night \u2728', aurora:'Aurora \u{1F30C}',
+    newyear:'New Year \u{1F386}', valentine:'Valentine\u2019s \u{1F497}', lunarnewyear:'Lunar New Year \u{1F3EE}',
+    stpatrick:'St. Patrick\u2019s \u2618\uFE0F', easter:'Easter \u{1F423}', earthday:'Earth Day \u{1F30D}',
+    cinco:'Cinco de Mayo \u{1F389}', pride:'Pride \u{1F3F3}\uFE0F\u200D\u{1F308}', mexindependence:'Mexican Independence \u{1F1F2}\u{1F1FD}',
+    halloween:'Halloween \u{1F383}', diamuertos:'D\u00EDa de Muertos \u{1F480}', diwali:'Diwali \u{1FA94}',
+    thanksgiving:'Thanksgiving \u{1F983}', hanukkah:'Hanukkah \u{1F54E}', christmas:'Christmas \u{1F384}',
+    matrix:'Matrix \u{1F5A5}\uFE0F', birthday:'Birthday \u{1F388}'
+  };
+
+  function applyTheme(name) {
+    [...document.body.classList].filter(c => c.startsWith('theme-')).forEach(c => document.body.classList.remove(c));
+    document.body.classList.add('theme-' + name);
+    document.documentElement.dataset.theme = name;
+    const cfg = THEMES[name] || THEMES.summer;
+    const box = document.getElementById('particles');
+    const flash = document.getElementById('flash');
+    if (box) box.innerHTML = '';
+    if (flash) flash.className = 'flash-layer';
+    if (flash && cfg.flash) flash.classList.add(cfg.flash);
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (box && !reduce) (cfg.layers || []).forEach(l => spawn(box, l));
+    const label = document.getElementById('theme-label');
+    if (label) label.textContent = DISPLAY[name] || name;
+  }
+
+  function build() {
+    applyTheme(pickTheme(new Date()));
+  }
+
+  build();
+</script>
